@@ -16,6 +16,14 @@
     --green-tint:#DCE3D2;
     --terra:#B5502D;
     --terra-tint:#F1DCCF;
+    --cat-plaga:#3D7A34;
+    --cat-plaga-tint:#DCEBD2;
+    --cat-enfermedad:#2E6E8E;
+    --cat-enfermedad-tint:#D6E7EE;
+    --cat-maleza:#B5502D;
+    --cat-maleza-tint:#F1DCCF;
+    --cat-nutricion:#B08214;
+    --cat-nutricion-tint:#F2E7C4;
     --font-display:'Fraunces', 'Iowan Old Style', Georgia, serif;
     --font-body:'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
     --font-mono:'IBM Plex Mono', 'SF Mono', Consolas, monospace;
@@ -34,6 +42,14 @@
       --green-tint:#2A3324;
       --terra:#E08556;
       --terra-tint:#3A2A1F;
+      --cat-plaga:#7DBE68;
+      --cat-plaga-tint:#26331F;
+      --cat-enfermedad:#6FB4DC;
+      --cat-enfermedad-tint:#1E2E38;
+      --cat-maleza:#E08556;
+      --cat-maleza-tint:#3A2A1F;
+      --cat-nutricion:#E0BE5C;
+      --cat-nutricion-tint:#39311A;
     }
   }
   :root[data-theme="dark"]{
@@ -48,6 +64,14 @@
     --green-tint:#2A3324;
     --terra:#E08556;
     --terra-tint:#3A2A1F;
+    --cat-plaga:#7DBE68;
+    --cat-plaga-tint:#26331F;
+    --cat-enfermedad:#6FB4DC;
+    --cat-enfermedad-tint:#1E2E38;
+    --cat-maleza:#E08556;
+    --cat-maleza-tint:#3A2A1F;
+    --cat-nutricion:#E0BE5C;
+    --cat-nutricion-tint:#39311A;
   }
 
   *{box-sizing:border-box;}
@@ -199,26 +223,32 @@
   }
   .field-search input:focus-visible{outline:2px solid var(--green); outline-offset:1px;}
   .field-search input::placeholder{color:var(--stone);}
-  .pill-row{display:flex; flex-wrap:wrap; gap:8px;}
+  .pill-row{display:flex; flex-wrap:wrap; gap:10px;}
   .pill{
-    font-size:0.85rem;
-    padding:7px 13px;
-    border-radius:20px;
-    border:1px solid var(--line);
+    font-size:0.95rem;
+    padding:11px 18px;
+    border-radius:24px;
+    border:1.5px solid var(--line);
     background:var(--paper);
     color:var(--ink-soft);
     cursor:pointer;
-    transition:background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+    transition:background 0.12s ease, border-color 0.12s ease, color 0.12s ease, transform 0.08s ease;
   }
-  .pill:hover{border-color:var(--stone);}
+  .pill:hover{border-color:var(--green); transform:translateY(-1px);}
+  .pill:active{transform:translateY(0);}
   .pill:focus-visible{outline:2px solid var(--green); outline-offset:2px;}
   .pill.active{
-    background:var(--green-tint);
+    background:var(--green);
     border-color:var(--green);
-    color:var(--green-deep);
-    font-weight:600;
+    color:#F8F5EA;
+    font-weight:700;
+    box-shadow:0 4px 12px -4px color-mix(in srgb, var(--green) 60%, transparent);
   }
   .pill.hidden{display:none;}
+  #problem-pills .pill[data-cat="plaga"].active{ background:var(--cat-plaga); border-color:var(--cat-plaga); box-shadow:0 4px 12px -4px color-mix(in srgb, var(--cat-plaga) 60%, transparent); }
+  #problem-pills .pill[data-cat="enfermedad"].active{ background:var(--cat-enfermedad); border-color:var(--cat-enfermedad); box-shadow:0 4px 12px -4px color-mix(in srgb, var(--cat-enfermedad) 60%, transparent); }
+  #problem-pills .pill[data-cat="maleza"].active{ background:var(--cat-maleza); border-color:var(--cat-maleza); box-shadow:0 4px 12px -4px color-mix(in srgb, var(--cat-maleza) 60%, transparent); }
+  #problem-pills .pill[data-cat="nutricion"].active{ background:var(--cat-nutricion); border-color:var(--cat-nutricion); box-shadow:0 4px 12px -4px color-mix(in srgb, var(--cat-nutricion) 60%, transparent); }
   .empty-note{
     display:none;
     font-size:0.8rem;
@@ -240,6 +270,14 @@
 
   .band-line{border-top:1px solid var(--line);}
 
+  .cat-legend{ display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+  .cat-chip{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:0.8rem; font-weight:600; color:var(--ink-soft);
+    padding:5px 12px; border-radius:20px; background:var(--paper-raised); border:1px solid var(--line);
+  }
+  .cat-chip::before{ content:''; width:8px; height:8px; border-radius:50%; background:var(--chip); flex:none; }
+
   /* RESULTS */
   .result-grid{
     display:grid;
@@ -249,11 +287,18 @@
   .result-card{
     background:var(--paper-raised);
     border:1px solid var(--line);
+    border-top:4px solid var(--stone);
     border-radius:6px;
     padding:24px;
     display:flex;
     flex-direction:column;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
   }
+  .result-card:hover{ transform:translateY(-3px); box-shadow:0 14px 28px -20px rgba(36,32,23,0.45); }
+  .result-card[data-cat="plaga"]{ border-top-color:var(--cat-plaga); }
+  .result-card[data-cat="enfermedad"]{ border-top-color:var(--cat-enfermedad); }
+  .result-card[data-cat="maleza"]{ border-top-color:var(--cat-maleza); }
+  .result-card[data-cat="nutricion"]{ border-top-color:var(--cat-nutricion); }
   .result-rank{
     font-family:var(--font-mono);
     font-size:0.72rem;
@@ -267,6 +312,10 @@
     color:var(--green);
     margin-top:10px;
   }
+  .result-card[data-cat="plaga"] .result-mfg{ color:var(--cat-plaga); }
+  .result-card[data-cat="enfermedad"] .result-mfg{ color:var(--cat-enfermedad); }
+  .result-card[data-cat="maleza"] .result-mfg{ color:var(--cat-maleza); }
+  .result-card[data-cat="nutricion"] .result-mfg{ color:var(--cat-nutricion); }
   .result-name{
     font-family:var(--font-display);
     font-weight:600;
@@ -275,10 +324,20 @@
     color:var(--ink);
   }
   .result-type{
-    font-size:0.85rem;
+    display:inline-block;
+    font-size:0.78rem;
+    font-weight:600;
     color:var(--ink-soft);
-    margin-top:4px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:3px 11px;
+    margin-top:8px;
   }
+  .result-card[data-cat="plaga"] .result-type{ color:var(--cat-plaga); background:var(--cat-plaga-tint); border-color:transparent; }
+  .result-card[data-cat="enfermedad"] .result-type{ color:var(--cat-enfermedad); background:var(--cat-enfermedad-tint); border-color:transparent; }
+  .result-card[data-cat="maleza"] .result-type{ color:var(--cat-maleza); background:var(--cat-maleza-tint); border-color:transparent; }
+  .result-card[data-cat="nutricion"] .result-type{ color:var(--cat-nutricion); background:var(--cat-nutricion-tint); border-color:transparent; }
   .result-specs{
     list-style:none;
     margin:16px 0 0;
@@ -637,14 +696,14 @@
           <input type="text" id="problem-search" placeholder="Buscar problema… (ej. araña roja)" autocomplete="off">
         </div>
         <div class="pill-row" id="problem-pills">
-          <span class="pill active" data-value="Plaga">🐛 Plaga</span>
-          <span class="pill" data-value="Enfermedad">🍄 Enfermedad</span>
-          <span class="pill" data-value="Maleza">🌿 Maleza</span>
-          <span class="pill" data-value="Nutrición">🧪 Nutrición</span>
-          <span class="pill" data-value="Mosca blanca">🦟 Mosca blanca</span>
-          <span class="pill" data-value="Pulgón">🐜 Pulgón</span>
-          <span class="pill" data-value="Araña roja">🕷️ Araña roja</span>
-          <span class="pill" data-value="Trips">🍂 Trips</span>
+          <span class="pill active" data-value="Plaga" data-cat="plaga">🐛 Plaga</span>
+          <span class="pill" data-value="Enfermedad" data-cat="enfermedad">🍄 Enfermedad</span>
+          <span class="pill" data-value="Maleza" data-cat="maleza">🌿 Maleza</span>
+          <span class="pill" data-value="Nutrición" data-cat="nutricion">🧪 Nutrición</span>
+          <span class="pill" data-value="Mosca blanca" data-cat="plaga">🦟 Mosca blanca</span>
+          <span class="pill" data-value="Pulgón" data-cat="plaga">🐜 Pulgón</span>
+          <span class="pill" data-value="Araña roja" data-cat="plaga">🕷️ Araña roja</span>
+          <span class="pill" data-value="Trips" data-cat="plaga">🍂 Trips</span>
         </div>
         <p class="empty-note" id="problem-empty">Sin coincidencias — se usará "<span></span>" como problema escrito.</p>
 
@@ -660,6 +719,12 @@
       <span class="eyebrow">Resultado de búsqueda</span>
       <h2 style="margin-top:10px;" id="results-title">Tomate + Plaga</h2>
       <p>AgroBC muestra las opciones disponibles que cumplen tu búsqueda, siempre de la misma categoría que pediste. Ningún fabricante paga por aparecer primero — al elegir un producto vas directo a su ficha técnica en el sitio del fabricante.</p>
+      <div class="cat-legend">
+        <span class="cat-chip" style="--chip:var(--cat-plaga);">Insecticida</span>
+        <span class="cat-chip" style="--chip:var(--cat-enfermedad);">Fungicida</span>
+        <span class="cat-chip" style="--chip:var(--cat-maleza);">Herbicida</span>
+        <span class="cat-chip" style="--chip:var(--cat-nutricion);">Nutrición</span>
+      </div>
     </div>
     <div class="result-grid" id="result-grid"></div>
     <div class="compare-foot"><span class="pin" style="color:var(--terra); font-family:var(--font-mono);">◍</span> Catálogo y precios de ejemplo para esta demostración. En la app real cada precio llevaría su fuente y fecha verificadas.</div>
@@ -1074,6 +1139,7 @@
     matches.forEach(function(p, i){
       var card = document.createElement('div');
       card.className = 'result-card';
+      card.setAttribute('data-cat', p.category);
       card.innerHTML =
         '<span class="result-rank">Opción ' + (i + 1) + '</span>' +
         '<span class="result-mfg">' + p.mfg + '</span>' +
@@ -1090,8 +1156,10 @@
         '</div>';
 
       var query = 'site:' + p.domain + ' "' + p.name + '" ficha técnica';
+      var CAT_COLOR = { plaga:'--cat-plaga', enfermedad:'--cat-enfermedad', maleza:'--cat-maleza', nutricion:'--cat-nutricion' };
       var buyBtn = document.createElement('a');
       buyBtn.className = 'btn btn-primary result-buy';
+      buyBtn.style.background = 'var(' + (CAT_COLOR[p.category] || '--green') + ')';
       buyBtn.href = 'https://www.google.com/search?q=' + encodeURIComponent(query);
       buyBtn.target = '_blank';
       buyBtn.rel = 'noopener noreferrer';
@@ -1154,8 +1222,11 @@
   var problem = setupField('problem', 'Plaga');
   var cta = document.getElementById('search-cta');
 
+  var CTA_CAT_COLOR = { plaga:'--cat-plaga', enfermedad:'--cat-enfermedad', maleza:'--cat-maleza', nutricion:'--cat-nutricion' };
   function updateCta(){
     cta.textContent = 'Buscar: ' + crop.get() + ' + ' + problem.get();
+    var cat = CATEGORY_BY_PROBLEM[problem.get()];
+    cta.style.background = 'var(' + (CTA_CAT_COLOR[cat] || '--green') + ')';
   }
   updateCta();
 
