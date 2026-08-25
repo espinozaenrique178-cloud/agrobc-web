@@ -660,9 +660,9 @@
   <div class="hero">
     <div class="wrap hero-grid">
       <div>
-        <span class="eyebrow">Baja California · Piloto 2026</span>
-        <h1 style="margin-top:14px;">Busca un cultivo y un problema. <em>Compara antes de comprar.</em></h1>
-        <p class="lede">AgroBC reúne los productos agrícolas disponibles en Baja California —fertilizantes, insecticidas, fungicidas y más— para que agricultores y agrónomos comparen ficha técnica, presentación y precio en un solo lugar, sin favoritismos de marca.</p>
+        <span class="eyebrow" id="cms-hero_eyebrow">Baja California · Piloto 2026</span>
+        <h1 style="margin-top:14px;"><span id="cms-hero_title">Busca un cultivo y un problema.</span> <em id="cms-hero_title_accent">Compara antes de comprar.</em></h1>
+        <p class="lede" id="cms-hero_lede">AgroBC reúne los productos agrícolas disponibles en Baja California —fertilizantes, insecticidas, fungicidas y más— para que agricultores y agrónomos comparen ficha técnica, presentación y precio en un solo lugar, sin favoritismos de marca.</p>
         <div class="hero-actions">
           <a href="#validar" class="btn btn-primary">Quiero probarla</a>
           <a href="#comparador" class="btn btn-ghost">Ver el comparador</a>
@@ -954,7 +954,7 @@
     <div class="section-head">
       <span class="eyebrow">Alcance del piloto</span>
       <h2 style="margin-top:10px;">Cómo funciona AgroBC</h2>
-      <p>Empezamos acotados a propósito: solo Baja California, solo los cultivos más relevantes de la región, para poder validar con productores y agrónomos reales antes de crecer.</p>
+      <p id="cms-como_funciona_lede">Empezamos acotados a propósito: solo Baja California, solo los cultivos más relevantes de la región, para poder validar con productores y agrónomos reales antes de crecer.</p>
     </div>
     <div class="steps">
       <div class="step">
@@ -992,7 +992,7 @@
         <div>
           <span class="eyebrow" style="color:#C7D9BC;">Antes de construir todo el ecosistema</span>
           <h2 style="margin-top:10px;">Esto es una prueba, no el producto final</h2>
-          <p>Antes de construir el ecosistema completo —cuentas de fabricante, catálogo nacional, historial— queremos confirmar algo simple: ¿esto le resuelve un problema real a quien compra insumos en Baja California?</p>
+          <p id="cms-validar_lede">Antes de construir el ecosistema completo —cuentas de fabricante, catálogo nacional, historial— queremos confirmar algo simple: ¿esto le resuelve un problema real a quien compra insumos en Baja California?</p>
           <ul class="validate-list">
             <li>5 minutos de entrevista sobre cómo comparas productos hoy</li>
             <li>Acceso anticipado a la primera versión funcional</li>
@@ -1084,29 +1084,63 @@
     // en vivo desde Supabase (tabla `fertilizantes`), administrados desde /admin.html.
   ];
 
-  function loadFertilizantesFromSupabase(){
-    if(!window.supabase || !window.AGROBC_SUPABASE){
-      return Promise.resolve();
-    }
-    var client = window.supabase.createClient(window.AGROBC_SUPABASE.url, window.AGROBC_SUPABASE.key);
-    return client.from('fertilizantes').select('*').order('name').then(function(res){
-      if(res.error || !res.data) return;
-      PRODUCTS = PRODUCTS.filter(function(p){ return p.category !== 'nutricion'; });
-      res.data.forEach(function(row){
-        PRODUCTS.push({
-          mfg: row.mfg || 'Fertilizante',
+  var supabaseClient = (window.supabase && window.AGROBC_SUPABASE)
+    ? window.supabase.createClient(window.AGROBC_SUPABASE.url, window.AGROBC_SUPABASE.key)
+    : null;
+
+  // Todo el catálogo (las 4 categorías) vive en Supabase (`productos`),
+  // administrado desde admin.html. El array de arriba es solo el
+  // respaldo que se ve mientras carga o si falla la conexión.
+  function loadCatalogFromSupabase(){
+    if(!supabaseClient) return Promise.resolve();
+    return supabaseClient.from('productos').select('*').order('name').then(function(res){
+      if(res.error || !res.data || res.data.length === 0) return;
+      PRODUCTS = res.data.map(function(row){
+        return {
+          mfg: row.mfg || '',
           domain: '',
           fichaUrl: row.ficha_tecnica || '',
           name: row.name,
-          type: 'Fertilizante',
-          ingredient: '',
-          presentation: row.presentation,
+          type: row.type || '',
+          ingredient: row.ingredient || '',
+          presentation: row.presentation || '',
           price: Number(row.price) || 0,
-          category: 'nutricion',
-          crops: ['any'],
-        });
+          category: row.category,
+          crops: (row.crops && row.crops.length) ? row.crops : ['any'],
+        };
       });
       renderResults(crop.get(), problem.get());
+    });
+  }
+
+  function loadCropsFromSupabase(){
+    if(!supabaseClient) return Promise.resolve();
+    return supabaseClient.from('crops').select('*').order('sort_order').then(function(res){
+      if(res.error || !res.data) return;
+      res.data.forEach(function(row){
+        crop.addPill(row.name, (row.emoji || '🌱') + ' ' + row.name);
+      });
+    });
+  }
+
+  function loadSiteContent(){
+    if(!supabaseClient) return Promise.resolve();
+    return supabaseClient.from('site_content').select('*').then(function(res){
+      if(res.error || !res.data) return;
+      res.data.forEach(function(row){
+        if(!row.value) return;
+        var el = document.getElementById('cms-' + row.key);
+        if(el) el.textContent = row.value;
+      });
+    });
+  }
+
+  function logSearch(cropValue, problemValue){
+    if(!supabaseClient) return;
+    supabaseClient.from('search_logs').insert({
+      crop: cropValue,
+      problem: problemValue,
+      category: CATEGORY_BY_PROBLEM[problemValue] || null,
     });
   }
 
@@ -1215,11 +1249,23 @@
       updateCta();
     }
 
-    pills.forEach(function(pill){
+    function bindPill(pill){
       pill.addEventListener('click', function(){
         select(pill.getAttribute('data-value'), true);
       });
-    });
+    }
+    pills.forEach(bindPill);
+
+    function addPill(value, label){
+      if(pills.some(function(p){ return p.getAttribute('data-value') === value; })) return;
+      var el = document.createElement('span');
+      el.className = 'pill';
+      el.setAttribute('data-value', value);
+      el.textContent = label;
+      row.appendChild(el);
+      pills.push(el);
+      bindPill(el);
+    }
 
     search.addEventListener('input', function(){
       var q = search.value.trim().toLowerCase();
@@ -1244,7 +1290,7 @@
       }
     });
 
-    return { get: function(){ return current || defaultValue; } };
+    return { get: function(){ return current || defaultValue; }, addPill: addPill };
   }
 
   var crop = setupField('crop', 'Tomate');
@@ -1261,10 +1307,13 @@
 
   cta.addEventListener('click', function(){
     renderResults(crop.get(), problem.get());
+    logSearch(crop.get(), problem.get());
     document.getElementById('resultados').scrollIntoView({ behavior:'smooth', block:'start' });
   });
 
   renderResults(crop.get(), problem.get());
-  loadFertilizantesFromSupabase();
+  loadCatalogFromSupabase();
+  loadCropsFromSupabase();
+  loadSiteContent();
 })();
 </script>
