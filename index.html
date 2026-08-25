@@ -602,16 +602,17 @@
   form.signup h3{font-family:var(--font-display); font-size:1.2rem; margin-bottom:18px; color:var(--ink);}
   .form-row{margin-bottom:14px; display:flex; flex-direction:column; gap:6px;}
   .form-row label{font-size:0.82rem; color:var(--ink-soft);}
-  .form-row input, .form-row select{
+  .form-row input, .form-row select, .form-row textarea{
     font-family:var(--font-body);
     font-size:0.95rem;
     padding:10px 12px;
     border:1px solid var(--line);
     border-radius:4px;
-    background:#fff;
+    background:var(--paper);
     color:var(--ink);
   }
-  .form-row input:focus-visible, .form-row select:focus-visible{outline:2px solid var(--green); outline-offset:1px;}
+  .form-row textarea{resize:vertical;}
+  .form-row input:focus-visible, .form-row select:focus-visible, .form-row textarea:focus-visible{outline:2px solid var(--green); outline-offset:1px;}
   form.signup .btn-primary{width:100%; justify-content:center; margin-top:6px;}
   .form-note{font-size:0.76rem; color:var(--stone); margin-top:12px;}
   .thanks{
@@ -623,6 +624,44 @@
   .thanks p{margin-top:10px; font-size:0.94rem; color:var(--ink-soft);}
   form.signup.sent .fields{display:none;}
   form.signup.sent .thanks{display:block;}
+
+  /* ADMIN */
+  .row{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
+  .admin-card{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:8px;
+    padding:26px; margin-top:18px;
+  }
+  .admin-card h2{font-size:1.05rem; margin-bottom:14px;}
+  .admin-hint{color:var(--stone); font-size:0.82rem; margin-top:14px;}
+  .admin-error{color:var(--terra); font-size:0.85rem; margin-top:10px;}
+  .admin-tabs{display:flex; gap:6px; margin-top:22px; flex-wrap:wrap;}
+  .admin-tab-btn{
+    font-family:var(--font-body); font-weight:600; font-size:0.85rem;
+    padding:9px 16px; border-radius:20px; border:1px solid var(--line);
+    background:var(--paper-raised); color:var(--ink-soft); cursor:pointer;
+  }
+  .admin-tab-btn.active{background:var(--green); border-color:var(--green); color:#F8F5EA;}
+  .admin-form-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .admin-form-grid .full{grid-column:1 / -1;}
+  .admin-table{width:100%; border-collapse:collapse; margin-top:8px; font-size:0.86rem;}
+  .admin-table th, .admin-table td{text-align:left; padding:9px 8px; border-bottom:1px solid var(--line);}
+  .admin-table th{font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--stone);}
+  .admin-table td.actions{white-space:nowrap; text-align:right;}
+  .admin-table td.actions button{font-size:0.78rem; padding:6px 9px; margin-left:6px;}
+  .cat-pill{
+    display:inline-block; font-size:0.7rem; font-weight:700; padding:2px 8px;
+    border-radius:20px; text-transform:uppercase; letter-spacing:0.03em; color:var(--ink);
+  }
+  .admin-stat-row{display:flex; gap:16px; flex-wrap:wrap; margin-top:6px;}
+  .admin-stat-box{
+    background:var(--paper); border:1px solid var(--line); border-radius:8px;
+    padding:14px 18px; min-width:140px;
+  }
+  .admin-stat-box .n{font-family:var(--font-mono); font-size:1.4rem; font-weight:700; color:var(--green-deep);}
+  .admin-stat-box .l{font-size:0.78rem; color:var(--stone); margin-top:2px;}
+  .btn-danger{background:var(--terra); color:#F8F5EA;}
+  .btn-danger:hover{background:var(--terra); opacity:0.85;}
+  @media (max-width:640px){ .admin-form-grid{grid-template-columns:1fr;} }
 
   footer{
     border-top:1px solid var(--line);
@@ -654,6 +693,7 @@
       <a href="#fabricantes">Fabricantes</a>
       <a href="#como-funciona">Cómo funciona</a>
       <a href="#validar">Súmate</a>
+      <a href="#admin">Admin</a>
     </nav>
   </div>
 
@@ -1039,11 +1079,141 @@
   </div>
 </section>
 
+<div class="band-line"><div class="wrap"></div></div>
+
+<section id="admin">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Acceso restringido</span>
+      <h2 style="margin-top:10px;" id="admin-heading">Administrador</h2>
+    </div>
+
+    <div id="admin-login-view">
+      <p>Esta pantalla es independiente de cualquier acceso de usuario público. Solo cuentas dadas de alta manualmente pueden entrar.</p>
+      <div class="admin-card">
+        <div class="form-row">
+          <label for="admin-email">Correo</label>
+          <input id="admin-email" type="email" autocomplete="username" placeholder="admin@agrobc.mx">
+        </div>
+        <div class="form-row">
+          <label for="admin-password">Contraseña</label>
+          <input id="admin-password" type="password" autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary" id="admin-login-btn" type="button">Entrar</button>
+        <p class="admin-error hidden" id="admin-login-error"></p>
+      </div>
+    </div>
+
+    <div id="admin-panel-view" class="hidden">
+      <div class="row">
+        <p style="margin:0;">Sesión activa como administrador.</p>
+        <button class="btn btn-ghost" id="admin-logout-btn" type="button">Cerrar sesión</button>
+      </div>
+
+      <div class="admin-tabs">
+        <button class="admin-tab-btn active" data-admin-tab="productos" type="button">Productos</button>
+        <button class="admin-tab-btn" data-admin-tab="cultivos" type="button">Cultivos</button>
+        <button class="admin-tab-btn" data-admin-tab="analitica" type="button">Analítica</button>
+        <button class="admin-tab-btn" data-admin-tab="contenido" type="button">Contenido del sitio</button>
+      </div>
+
+      <!-- PRODUCTOS -->
+      <div id="admin-tab-productos" class="admin-tab-pane">
+        <div class="admin-card">
+          <h2 id="admin-prod-form-heading">Agregar producto</h2>
+          <div class="admin-form-grid">
+            <div class="form-row">
+              <label for="admin-p-category">Categoría</label>
+              <select id="admin-p-category">
+                <option value="plaga">Plaga (insecticida)</option>
+                <option value="enfermedad">Enfermedad (fungicida)</option>
+                <option value="maleza">Maleza (herbicida)</option>
+                <option value="nutricion">Nutrición (fertilizante)</option>
+              </select>
+            </div>
+            <div class="form-row"><label for="admin-p-name">Nombre</label><input id="admin-p-name" type="text" placeholder="Ej. Sivanto Prime"></div>
+            <div class="form-row"><label for="admin-p-mfg">Fabricante</label><input id="admin-p-mfg" type="text" placeholder="Ej. Bayer"></div>
+            <div class="form-row"><label for="admin-p-type">Tipo</label><input id="admin-p-type" type="text" placeholder="Ej. Insecticida"></div>
+            <div class="form-row"><label for="admin-p-ingredient">Ingrediente activo</label><input id="admin-p-ingredient" type="text" placeholder="Opcional"></div>
+            <div class="form-row"><label for="admin-p-presentation">Presentación</label><input id="admin-p-presentation" type="text" placeholder="Ej. 1 L"></div>
+            <div class="form-row"><label for="admin-p-price">Precio (MXN)</label><input id="admin-p-price" type="number" step="0.01" placeholder="Ej. 480"></div>
+            <div class="form-row"><label for="admin-p-crops">Cultivos (separados por coma, o "any")</label><input id="admin-p-crops" type="text" placeholder="Tomate, Fresa, Chile"></div>
+            <div class="form-row full"><label for="admin-p-ficha">Ficha técnica (URL)</label><input id="admin-p-ficha" type="text" placeholder="https://..."></div>
+          </div>
+          <div class="row" style="justify-content:flex-start; gap:10px; margin-top:6px;">
+            <button class="btn btn-primary" id="admin-p-save-btn" type="button">Guardar</button>
+            <button class="btn btn-ghost hidden" id="admin-p-cancel-btn" type="button">Cancelar edición</button>
+          </div>
+          <p class="admin-error hidden" id="admin-p-form-error"></p>
+        </div>
+        <div class="admin-card">
+          <div class="row"><h2 style="margin-bottom:0;">Catálogo actual</h2><span class="admin-hint" id="admin-p-count-hint"></span></div>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead><tr><th>Categoría</th><th>Nombre</th><th>Fabricante</th><th>Presentación</th><th>Precio</th><th></th></tr></thead>
+              <tbody id="admin-p-rows"></tbody>
+            </table>
+          </div>
+          <p class="admin-error hidden" id="admin-p-list-error"></p>
+        </div>
+      </div>
+
+      <!-- CULTIVOS -->
+      <div id="admin-tab-cultivos" class="admin-tab-pane hidden">
+        <div class="admin-card">
+          <h2>Agregar cultivo</h2>
+          <div class="admin-form-grid">
+            <div class="form-row"><label for="admin-c-name">Nombre</label><input id="admin-c-name" type="text" placeholder="Ej. Espárrago"></div>
+            <div class="form-row"><label for="admin-c-emoji">Emoji</label><input id="admin-c-emoji" type="text" placeholder="🌱"></div>
+          </div>
+          <button class="btn btn-primary" id="admin-c-save-btn" type="button" style="margin-top:6px;">Agregar</button>
+          <p class="admin-error hidden" id="admin-c-form-error"></p>
+        </div>
+        <div class="admin-card">
+          <h2 style="margin-bottom:6px;">Cultivos actuales</h2>
+          <p class="admin-hint" style="margin-top:0;">Los 12 originales viven en el código como respaldo — eliminarlos aquí no los quita de ahí. Los que agregues aquí sí aparecen y desaparecen en vivo en el buscador.</p>
+          <table class="admin-table">
+            <thead><tr><th>Cultivo</th><th></th></tr></thead>
+            <tbody id="admin-c-rows"></tbody>
+          </table>
+          <p class="admin-error hidden" id="admin-c-list-error"></p>
+        </div>
+      </div>
+
+      <!-- ANALÍTICA -->
+      <div id="admin-tab-analitica" class="admin-tab-pane hidden">
+        <div class="admin-card">
+          <h2>Qué busca la gente</h2>
+          <div class="admin-stat-row" id="admin-a-totals"></div>
+          <div style="overflow-x:auto;">
+            <table class="admin-table" style="margin-top:18px;">
+              <thead><tr><th>Cultivo</th><th>Problema</th><th>Categoría</th><th>Veces buscado</th></tr></thead>
+              <tbody id="admin-a-rows"></tbody>
+            </table>
+          </div>
+          <p class="admin-hint" id="admin-a-empty"></p>
+          <p class="admin-error hidden" id="admin-a-error"></p>
+        </div>
+      </div>
+
+      <!-- CONTENIDO -->
+      <div id="admin-tab-contenido" class="admin-tab-pane hidden">
+        <div class="admin-card">
+          <h2 style="margin-bottom:6px;">Textos del sitio</h2>
+          <p class="admin-hint" style="margin-top:0;">Edita el copy de las secciones principales. Los cambios se ven en la página al recargar.</p>
+          <div id="admin-s-fields"></div>
+          <button class="btn btn-primary" id="admin-s-save-btn" type="button" style="margin-top:10px;">Guardar cambios</button>
+          <p class="admin-error hidden" id="admin-s-error"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap foot-row">
     <div class="logo">AgroBC<span class="dot">.</span></div>
     <div>Baja California · Piloto de validación · No favorecemos ninguna marca por pago.</div>
-    <a href="admin.html" style="color:var(--stone); font-size:0.78rem;">Acceso administrador</a>
   </div>
 </footer>
 
@@ -1315,5 +1485,310 @@
   loadCatalogFromSupabase();
   loadCropsFromSupabase();
   loadSiteContent();
+
+  // ==================== ADMIN ====================
+  (function(){
+    if(!supabaseClient){ return; }
+
+    var loginView = document.getElementById('admin-login-view');
+    var panelView = document.getElementById('admin-panel-view');
+    var loginBtn = document.getElementById('admin-login-btn');
+    var logoutBtn = document.getElementById('admin-logout-btn');
+    var loginError = document.getElementById('admin-login-error');
+
+    function showAdminError(el, msg){ el.textContent = msg; el.classList.remove('hidden'); }
+    function hideAdminError(el){ el.classList.add('hidden'); }
+
+    var CATEGORY_LABEL = { plaga:'Plaga', enfermedad:'Enfermedad', maleza:'Maleza', nutricion:'Nutrición' };
+    var CATEGORY_COLOR = { plaga:'#DCEBD2', enfermedad:'#D6E7EE', maleza:'#F1DCCF', nutricion:'#F2E7C4' };
+
+    // ---- tabs ----
+    var tabButtons = Array.prototype.slice.call(document.querySelectorAll('.admin-tab-btn'));
+    var tabPanes = {};
+    ['productos','cultivos','analitica','contenido'].forEach(function(k){ tabPanes[k] = document.getElementById('admin-tab-' + k); });
+    tabButtons.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var target = btn.getAttribute('data-admin-tab');
+        tabButtons.forEach(function(b){ b.classList.toggle('active', b === btn); });
+        Object.keys(tabPanes).forEach(function(k){ tabPanes[k].classList.toggle('hidden', k !== target); });
+        if(target === 'productos') loadProductos();
+        if(target === 'cultivos') loadAdminCrops();
+        if(target === 'analitica') loadAnalytics();
+        if(target === 'contenido') loadContent();
+      });
+    });
+
+    // ---- productos ----
+    var pRowsBody = document.getElementById('admin-p-rows');
+    var pCountHint = document.getElementById('admin-p-count-hint');
+    var pListError = document.getElementById('admin-p-list-error');
+    var pFormError = document.getElementById('admin-p-form-error');
+    var pSaveBtn = document.getElementById('admin-p-save-btn');
+    var pCancelBtn = document.getElementById('admin-p-cancel-btn');
+    var pFormHeading = document.getElementById('admin-prod-form-heading');
+    var pEditingId = null;
+
+    function pResetForm(){
+      pEditingId = null;
+      document.getElementById('admin-p-category').value = 'plaga';
+      document.getElementById('admin-p-name').value = '';
+      document.getElementById('admin-p-mfg').value = '';
+      document.getElementById('admin-p-type').value = '';
+      document.getElementById('admin-p-ingredient').value = '';
+      document.getElementById('admin-p-presentation').value = '';
+      document.getElementById('admin-p-price').value = '';
+      document.getElementById('admin-p-crops').value = '';
+      document.getElementById('admin-p-ficha').value = '';
+      pFormHeading.textContent = 'Agregar producto';
+      pCancelBtn.classList.add('hidden');
+      hideAdminError(pFormError);
+    }
+    function pStartEdit(row){
+      pEditingId = row.id;
+      document.getElementById('admin-p-category').value = row.category;
+      document.getElementById('admin-p-name').value = row.name || '';
+      document.getElementById('admin-p-mfg').value = row.mfg || '';
+      document.getElementById('admin-p-type').value = row.type || '';
+      document.getElementById('admin-p-ingredient').value = row.ingredient || '';
+      document.getElementById('admin-p-presentation').value = row.presentation || '';
+      document.getElementById('admin-p-price').value = row.price || '';
+      document.getElementById('admin-p-crops').value = (row.crops || []).join(', ');
+      document.getElementById('admin-p-ficha').value = row.ficha_tecnica || '';
+      pFormHeading.textContent = 'Editar: ' + row.name;
+      pCancelBtn.classList.remove('hidden');
+    }
+    function loadProductos(){
+      hideAdminError(pListError);
+      supabaseClient.from('productos').select('*').order('category').order('name').then(function(res){
+        if(res.error){ showAdminError(pListError, 'No se pudo cargar: ' + res.error.message); return; }
+        var data = res.data || [];
+        pCountHint.textContent = data.length + ' producto' + (data.length === 1 ? '' : 's');
+        pRowsBody.innerHTML = '';
+        data.forEach(function(row){
+          var tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td><span class="cat-pill" style="background:' + CATEGORY_COLOR[row.category] + '">' + CATEGORY_LABEL[row.category] + '</span></td>' +
+            '<td>' + escapeHtml(row.name) + '</td>' +
+            '<td>' + escapeHtml(row.mfg) + '</td>' +
+            '<td>' + escapeHtml(row.presentation) + '</td>' +
+            '<td class="price-cell">' + fmtMoney(row.price) + '</td>' +
+            '<td class="actions"></td>';
+          var actionsCell = tr.querySelector('.actions');
+          var editBtn = document.createElement('button');
+          editBtn.className = 'btn btn-ghost'; editBtn.type = 'button'; editBtn.textContent = 'Editar';
+          editBtn.addEventListener('click', function(){ pStartEdit(row); });
+          var delBtn = document.createElement('button');
+          delBtn.className = 'btn btn-danger'; delBtn.type = 'button'; delBtn.textContent = 'Eliminar';
+          delBtn.addEventListener('click', function(){
+            if(!window.confirm('¿Eliminar "' + row.name + '"?')) return;
+            supabaseClient.from('productos').delete().eq('id', row.id).then(function(res2){
+              if(res2.error){ showAdminError(pListError, 'No se pudo eliminar: ' + res2.error.message); return; }
+              loadProductos();
+              loadCatalogFromSupabase();
+            });
+          });
+          actionsCell.appendChild(editBtn);
+          actionsCell.appendChild(delBtn);
+          pRowsBody.appendChild(tr);
+        });
+      });
+    }
+    pCancelBtn.addEventListener('click', pResetForm);
+    pSaveBtn.addEventListener('click', function(){
+      hideAdminError(pFormError);
+      var cropsText = document.getElementById('admin-p-crops').value.trim();
+      var cropsArr = cropsText ? cropsText.split(',').map(function(s){ return s.trim(); }).filter(Boolean) : ['any'];
+      var payload = {
+        category: document.getElementById('admin-p-category').value,
+        name: document.getElementById('admin-p-name').value.trim(),
+        mfg: document.getElementById('admin-p-mfg').value.trim(),
+        type: document.getElementById('admin-p-type').value.trim(),
+        ingredient: document.getElementById('admin-p-ingredient').value.trim(),
+        presentation: document.getElementById('admin-p-presentation').value.trim(),
+        price: Number(document.getElementById('admin-p-price').value) || 0,
+        crops: cropsArr,
+        ficha_tecnica: document.getElementById('admin-p-ficha').value.trim(),
+      };
+      if(!payload.name){ showAdminError(pFormError, 'El nombre es obligatorio.'); return; }
+      pSaveBtn.disabled = true;
+      var query = pEditingId
+        ? supabaseClient.from('productos').update(payload).eq('id', pEditingId)
+        : supabaseClient.from('productos').insert(payload);
+      query.then(function(res){
+        pSaveBtn.disabled = false;
+        if(res.error){ showAdminError(pFormError, 'No se pudo guardar: ' + res.error.message); return; }
+        pResetForm();
+        loadProductos();
+        loadCatalogFromSupabase();
+      });
+    });
+
+    // ---- cultivos ----
+    var cRowsBody = document.getElementById('admin-c-rows');
+    var cListError = document.getElementById('admin-c-list-error');
+    var cFormError = document.getElementById('admin-c-form-error');
+    var cSaveBtn = document.getElementById('admin-c-save-btn');
+    function loadAdminCrops(){
+      hideAdminError(cListError);
+      supabaseClient.from('crops').select('*').order('sort_order').then(function(res){
+        if(res.error){ showAdminError(cListError, 'No se pudo cargar: ' + res.error.message); return; }
+        var data = res.data || [];
+        cRowsBody.innerHTML = '';
+        data.forEach(function(row){
+          var tr = document.createElement('tr');
+          tr.innerHTML = '<td>' + escapeHtml(row.emoji) + ' ' + escapeHtml(row.name) + '</td><td class="actions"></td>';
+          var delBtn = document.createElement('button');
+          delBtn.className = 'btn btn-danger'; delBtn.type = 'button'; delBtn.textContent = 'Eliminar';
+          delBtn.addEventListener('click', function(){
+            if(!window.confirm('¿Eliminar "' + row.name + '"?')) return;
+            supabaseClient.from('crops').delete().eq('id', row.id).then(function(res2){
+              if(res2.error){ showAdminError(cListError, 'No se pudo eliminar: ' + res2.error.message); return; }
+              loadAdminCrops();
+            });
+          });
+          tr.querySelector('.actions').appendChild(delBtn);
+          cRowsBody.appendChild(tr);
+        });
+      });
+    }
+    cSaveBtn.addEventListener('click', function(){
+      hideAdminError(cFormError);
+      var name = document.getElementById('admin-c-name').value.trim();
+      var emoji = document.getElementById('admin-c-emoji').value.trim() || '🌱';
+      if(!name){ showAdminError(cFormError, 'El nombre es obligatorio.'); return; }
+      cSaveBtn.disabled = true;
+      supabaseClient.from('crops').insert({ name: name, emoji: emoji, sort_order: 999 }).then(function(res){
+        cSaveBtn.disabled = false;
+        if(res.error){ showAdminError(cFormError, 'No se pudo guardar: ' + res.error.message); return; }
+        document.getElementById('admin-c-name').value = '';
+        document.getElementById('admin-c-emoji').value = '';
+        loadAdminCrops();
+        loadCropsFromSupabase();
+      });
+    });
+
+    // ---- analítica ----
+    var aRowsBody = document.getElementById('admin-a-rows');
+    var aTotals = document.getElementById('admin-a-totals');
+    var aEmpty = document.getElementById('admin-a-empty');
+    var aError = document.getElementById('admin-a-error');
+    function loadAnalytics(){
+      hideAdminError(aError);
+      aTotals.innerHTML = '';
+      aRowsBody.innerHTML = '';
+      aEmpty.textContent = '';
+      supabaseClient.rpc('search_totals').then(function(res){
+        if(res.error || !res.data || !res.data[0]) return;
+        var t = res.data[0];
+        aTotals.innerHTML =
+          '<div class="admin-stat-box"><div class="n">' + (t.total_searches || 0) + '</div><div class="l">Búsquedas totales</div></div>' +
+          '<div class="admin-stat-box"><div class="n">' + (t.total_since ? new Date(t.total_since).toLocaleDateString('es-MX') : '—') + '</div><div class="l">Desde</div></div>';
+      });
+      supabaseClient.rpc('search_stats').then(function(res){
+        if(res.error){ showAdminError(aError, 'No se pudo cargar la analítica: ' + res.error.message); return; }
+        var data = res.data || [];
+        if(data.length === 0){ aEmpty.textContent = 'Todavía no hay búsquedas registradas.'; return; }
+        data.forEach(function(row){
+          var tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td>' + escapeHtml(row.crop) + '</td>' +
+            '<td>' + escapeHtml(row.problem) + '</td>' +
+            '<td>' + escapeHtml(CATEGORY_LABEL[row.category] || row.category || '—') + '</td>' +
+            '<td class="price-cell">' + row.total + '</td>';
+          aRowsBody.appendChild(tr);
+        });
+      });
+    }
+
+    // ---- contenido ----
+    var sFields = document.getElementById('admin-s-fields');
+    var sSaveBtn = document.getElementById('admin-s-save-btn');
+    var sError = document.getElementById('admin-s-error');
+    var CONTENT_LABELS = {
+      hero_eyebrow: 'Etiqueta superior del inicio',
+      hero_title: 'Título principal',
+      hero_title_accent: 'Título principal (parte resaltada)',
+      hero_lede: 'Párrafo de introducción',
+      como_funciona_lede: 'Intro de "Cómo funciona"',
+      validar_lede: 'Intro de "Súmate al piloto"',
+    };
+    function loadContent(){
+      hideAdminError(sError);
+      supabaseClient.from('site_content').select('*').then(function(res){
+        if(res.error){ showAdminError(sError, 'No se pudo cargar: ' + res.error.message); return; }
+        var data = res.data || [];
+        sFields.innerHTML = '';
+        data.forEach(function(row){
+          var field = document.createElement('div');
+          field.className = 'form-row';
+          var label = document.createElement('label');
+          label.textContent = CONTENT_LABELS[row.key] || row.key;
+          var textarea = document.createElement('textarea');
+          textarea.value = row.value || '';
+          textarea.setAttribute('data-key', row.key);
+          textarea.style.minHeight = '80px';
+          field.appendChild(label);
+          field.appendChild(textarea);
+          sFields.appendChild(field);
+        });
+      });
+    }
+    sSaveBtn.addEventListener('click', function(){
+      hideAdminError(sError);
+      var textareas = Array.prototype.slice.call(sFields.querySelectorAll('textarea'));
+      sSaveBtn.disabled = true;
+      Promise.all(textareas.map(function(t){
+        return supabaseClient.from('site_content').update({ value: t.value }).eq('key', t.getAttribute('data-key'));
+      })).then(function(results){
+        sSaveBtn.disabled = false;
+        var failed = results.filter(function(r){ return r.error; })[0];
+        if(failed){ showAdminError(sError, 'No se pudo guardar: ' + failed.error.message); return; }
+        loadContent();
+        loadSiteContent();
+      });
+    });
+
+    // ---- login/sesión ----
+    function showAdminPanel(){
+      loginView.classList.add('hidden');
+      panelView.classList.remove('hidden');
+      pResetForm();
+      loadProductos();
+    }
+    function showAdminLogin(message){
+      panelView.classList.add('hidden');
+      loginView.classList.remove('hidden');
+      if(message){ showAdminError(loginError, message); } else { hideAdminError(loginError); }
+    }
+    function checkAdminSession(){
+      return supabaseClient.auth.getSession().then(function(res){
+        var session = res.data && res.data.session;
+        if(!session){ showAdminLogin(); return; }
+        return supabaseClient.rpc('is_admin').then(function(res2){
+          if(res2.error || !res2.data){
+            supabaseClient.auth.signOut().then(function(){ showAdminLogin('Esta cuenta no tiene permiso de administrador.'); });
+            return;
+          }
+          showAdminPanel();
+        });
+      });
+    }
+    loginBtn.addEventListener('click', function(){
+      hideAdminError(loginError);
+      var email = document.getElementById('admin-email').value.trim();
+      var password = document.getElementById('admin-password').value;
+      if(!email || !password){ showAdminError(loginError, 'Ingresa correo y contraseña.'); return; }
+      loginBtn.disabled = true;
+      supabaseClient.auth.signInWithPassword({ email: email, password: password }).then(function(res){
+        loginBtn.disabled = false;
+        if(res.error){ showAdminError(loginError, 'No se pudo iniciar sesión: ' + res.error.message); return; }
+        checkAdminSession();
+      });
+    });
+    logoutBtn.addEventListener('click', function(){ supabaseClient.auth.signOut().then(function(){ showAdminLogin(); }); });
+    document.getElementById('admin-password').addEventListener('keydown', function(e){ if(e.key === 'Enter') loginBtn.click(); });
+
+    checkAdminSession();
+  })();
 })();
 </script>
