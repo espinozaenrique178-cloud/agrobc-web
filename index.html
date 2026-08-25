@@ -2,6 +2,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-config.js"></script>
 
 <style>
   :root{
@@ -1041,6 +1043,7 @@
   <div class="wrap foot-row">
     <div class="logo">AgroBC<span class="dot">.</span></div>
     <div>Baja California · Piloto de validación · No favorecemos ninguna marca por pago.</div>
+    <a href="admin.html" style="color:var(--stone); font-size:0.78rem;">Acceso administrador</a>
   </div>
 </footer>
 
@@ -1077,20 +1080,41 @@
     { mfg:'BASF', domain:'agriculture.basf.com', name:'Priori Xtra', type:'Fungicida', ingredient:'Azoxistrobina + Ciproconazol', presentation:'1 L', price:750, category:'enfermedad', crops:['Tomate','Cebolla','Lechuga'] },
     { mfg:'BASF', domain:'agriculture.basf.com', name:'Basta', type:'Herbicida', ingredient:'Glufosinato de amonio', presentation:'1 L', price:470, category:'maleza', crops:['any'] },
 
-    { mfg:'Yara', domain:'yara.com', name:'YaraVita', type:'Bioestimulante foliar', ingredient:'Micronutrientes quelatados', presentation:'1 L', price:310, category:'nutricion', crops:['any'] },
-    { mfg:'Yara', domain:'yara.com', name:'YaraMila', type:'Fertilizante NPK', ingredient:'N-P-K + micronutrientes', presentation:'25 kg', price:890, category:'nutricion', crops:['any'] },
-    { mfg:'ICL', domain:'icl-group.com', name:'Agroleaf Power', type:'Fertilizante hidrosoluble', ingredient:'NPK + micronutrientes', presentation:'20 kg', price:1050, category:'nutricion', crops:['any'] },
-    { mfg:'SQM', domain:'sqm.com', name:'Ultrasol', type:'Fertilizante hidrosoluble', ingredient:'NPK + elementos menores', presentation:'25 kg', price:960, category:'nutricion', crops:['any'] },
-    { mfg:'Haifa', domain:'haifa-group.com', name:'Multi-K', type:'Fertilizante potásico', ingredient:'Nitrato de potasio', presentation:'25 kg', price:980, category:'nutricion', crops:['any'] },
-    { mfg:'Haifa', domain:'haifa-group.com', name:'Haifa Cal', type:'Fertilizante cálcico', ingredient:'Nitrato de calcio', presentation:'25 kg', price:750, category:'nutricion', crops:['any'] },
-    { mfg:'Mosaic', domain:'mosaicco.com', name:'MicroEssentials', type:'Fertilizante NPK + azufre', ingredient:'NPK + Azufre', presentation:'50 kg', price:1100, category:'nutricion', crops:['any'] },
-    { mfg:'Mosaic', domain:'mosaicco.com', name:'Aspire', type:'Fertilizante potásico', ingredient:'Potasio + Boro', presentation:'25 kg', price:890, category:'nutricion', crops:['any'] },
-    { mfg:'Nutrien Ag Solutions', domain:'nutrien.com', name:'ESN', type:'Fertilizante nitrogenado de liberación controlada', ingredient:'Urea recubierta de polímero', presentation:'25 kg', price:920, category:'nutricion', crops:['any'] },
-    { mfg:'Nutrien Ag Solutions', domain:'nutrien.com', name:'Suståin', type:'Fertilizante fosfatado', ingredient:'Fósforo', presentation:'25 kg', price:860, category:'nutricion', crops:['any'] },
-    { mfg:'Compo Expert', domain:'compo-expert.com', name:'Basfoliar', type:'Bioestimulante foliar', ingredient:'Micronutrientes + aminoácidos', presentation:'1 L', price:420, category:'nutricion', crops:['any'] },
-    { mfg:'Compo Expert', domain:'compo-expert.com', name:'Novatec', type:'Fertilizante nitrogenado estabilizado', ingredient:'Urea + DMPP', presentation:'25 kg', price:940, category:'nutricion', crops:['any'] },
-    { mfg:'Van Iperen', domain:'vaniperen.com', name:'Kristalon', type:'Fertilizante hidrosoluble', ingredient:'NPK + micronutrientes', presentation:'25 kg', price:1020, category:'nutricion', crops:['any'] }
+    // Los fertilizantes (categoría 'nutricion') ya no van fijos aquí — se cargan
+    // en vivo desde Supabase (tabla `fertilizantes`), administrados desde /admin.html.
   ];
+
+  function loadFertilizantesFromSupabase(){
+    if(!window.supabase || !window.AGROBC_SUPABASE){
+      return Promise.resolve();
+    }
+    var client = window.supabase.createClient(window.AGROBC_SUPABASE.url, window.AGROBC_SUPABASE.key);
+    return client.from('fertilizantes').select('*').order('name').then(function(res){
+      if(res.error || !res.data) return;
+      PRODUCTS = PRODUCTS.filter(function(p){ return p.category !== 'nutricion'; });
+      res.data.forEach(function(row){
+        PRODUCTS.push({
+          mfg: row.mfg || 'Fertilizante',
+          domain: '',
+          fichaUrl: row.ficha_tecnica || '',
+          name: row.name,
+          type: 'Fertilizante',
+          ingredient: '',
+          presentation: row.presentation,
+          price: Number(row.price) || 0,
+          category: 'nutricion',
+          crops: ['any'],
+        });
+      });
+      renderResults(crop.get(), problem.get());
+    });
+  }
+
+  function escapeHtml(str){
+    var div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
 
   function fmtMoney(n){
     return '$' + n.toLocaleString('es-MX');
@@ -1140,27 +1164,32 @@
       var card = document.createElement('div');
       card.className = 'result-card';
       card.setAttribute('data-cat', p.category);
+      var ingredientRow = p.ingredient ? '<li><span>Ingrediente activo</span><span>' + escapeHtml(p.ingredient) + '</span></li>' : '';
       card.innerHTML =
         '<span class="result-rank">Opción ' + (i + 1) + '</span>' +
-        '<span class="result-mfg">' + p.mfg + '</span>' +
-        '<div class="result-name">' + p.name + '</div>' +
-        '<div class="result-type">' + p.type + '</div>' +
+        '<span class="result-mfg">' + escapeHtml(p.mfg) + '</span>' +
+        '<div class="result-name">' + escapeHtml(p.name) + '</div>' +
+        '<div class="result-type">' + escapeHtml(p.type) + '</div>' +
         '<ul class="result-specs">' +
-          '<li><span>Ingrediente activo</span><span>' + p.ingredient + '</span></li>' +
-          '<li><span>Presentación</span><span>' + p.presentation + '</span></li>' +
-          '<li><span>Cultivo</span><span>' + cropValue + '</span></li>' +
+          ingredientRow +
+          '<li><span>Presentación</span><span>' + escapeHtml(p.presentation) + '</span></li>' +
+          '<li><span>Cultivo</span><span>' + escapeHtml(cropValue) + '</span></li>' +
         '</ul>' +
         '<div class="result-price">' +
           '<span class="amount">' + fmtMoney(p.price) + '</span>' +
           '<span class="source">Ejemplo · actualizado 23/08/2026</span>' +
         '</div>';
 
-      var query = 'site:' + p.domain + ' "' + p.name + '" ficha técnica';
       var CAT_COLOR = { plaga:'--cat-plaga', enfermedad:'--cat-enfermedad', maleza:'--cat-maleza', nutricion:'--cat-nutricion' };
       var buyBtn = document.createElement('a');
       buyBtn.className = 'btn btn-primary result-buy';
       buyBtn.style.background = 'var(' + (CAT_COLOR[p.category] || '--green') + ')';
-      buyBtn.href = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+      if(p.fichaUrl){
+        buyBtn.href = p.fichaUrl;
+      } else {
+        var query = 'site:' + p.domain + ' "' + p.name + '" ficha técnica';
+        buyBtn.href = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+      }
       buyBtn.target = '_blank';
       buyBtn.rel = 'noopener noreferrer';
       buyBtn.innerHTML = 'Ficha técnica en ' + p.mfg + ' <span aria-hidden="true">↗</span>';
@@ -1236,5 +1265,6 @@
   });
 
   renderResults(crop.get(), problem.get());
+  loadFertilizantesFromSupabase();
 })();
 </script>
