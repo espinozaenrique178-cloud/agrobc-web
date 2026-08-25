@@ -1,0 +1,16 @@
+{
+  "name": "AgroBC",
+  "short_name": "AgroBC",
+  "description": "Busca un cultivo y un problema, compara productos agrícolas en Baja California.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EDE8D8",
+  "theme_color": "#2C4126",
+  "lang": "es-MX",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

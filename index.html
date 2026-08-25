@@ -1,4 +1,18 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AgroBC</title>
+<meta name="description" content="Busca un cultivo y un problema, compara productos agrícolas en Baja California.">
+
+<!-- PWA: instalable, pantalla completa en iOS al agregar a inicio -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2C4126">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AgroBC">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icons/icon-512.png" sizes="512x512" type="image/png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -117,7 +131,7 @@
   }
   .topbar{
     display:flex; align-items:center; justify-content:space-between;
-    padding:22px 0;
+    padding:calc(22px + env(safe-area-inset-top)) 0 22px;
     position:relative; z-index:1;
   }
   .logo{
@@ -666,7 +680,7 @@
 
   footer{
     border-top:1px solid var(--line);
-    padding:32px 0 42px;
+    padding:32px 0 calc(42px + env(safe-area-inset-bottom));
   }
   .foot-row{
     display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
@@ -1792,4 +1806,10 @@
     checkAdminSession();
   })();
 })();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js');
+  });
+}
 </script>
