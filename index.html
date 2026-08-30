@@ -640,6 +640,34 @@
   form.signup.sent .fields{display:none;}
   form.signup.sent .thanks{display:block;}
 
+  /* CALCULADORA */
+  .calc-grid{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:24px;
+    align-items:start;
+  }
+  .calc-dose-row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .calc-dose-input{
+    font-family:var(--font-body); font-size:0.95rem; padding:11px 13px;
+    border:1px solid var(--line); border-radius:6px; background:var(--paper); color:var(--ink);
+    width:120px;
+  }
+  #calc-result-card{ min-height:100%; }
+  .calc-empty{ color:var(--stone); font-size:0.9rem; margin-top:16px; }
+  .calc-amount{ margin-top:14px; }
+  .calc-amount span{ font-family:var(--font-mono); font-size:2rem; font-weight:700; color:var(--terra); }
+  .calc-equiv-list{
+    margin-top:18px; padding-top:16px; border-top:1px solid var(--line);
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .calc-equiv-row{ display:flex; justify-content:space-between; font-size:0.9rem; }
+  .calc-equiv-row .l{ color:var(--stone); }
+  .calc-equiv-row .v{ color:var(--ink); font-weight:600; font-family:var(--font-mono); }
+  @media (max-width:820px){
+    .calc-grid{ grid-template-columns:1fr; }
+  }
+
   /* ADMIN */
   .row{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
   .admin-card{
@@ -706,6 +734,7 @@
     <nav>
       <a href="#comparador">Comparador</a>
       <a href="#fabricantes">Fabricantes</a>
+      <a href="#calculadora">Calculadora</a>
       <a href="#como-funciona">Cómo funciona</a>
       <a href="#validar">Súmate</a>
       <a href="#admin">Admin</a>
@@ -973,6 +1002,47 @@
       </div>
     </div>
     <div class="compare-foot"><span class="pin" style="color:var(--terra); font-family:var(--font-mono);">◍</span> Nombres de fabricantes y productos con fines ilustrativos para esta demostración; no representan un catálogo verificado ni una asociación actual con AgroBC.</div>
+  </div>
+</section>
+
+<div class="band-line"><div class="wrap"></div></div>
+
+<section id="calculadora">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Herramienta</span>
+      <h2 style="margin-top:10px;">Calculadora de dosificación</h2>
+      <p>Calcula cuánto producto necesitas según la dosis indicada por el fabricante y la superficie a tratar.</p>
+    </div>
+
+    <div class="calc-grid">
+      <div class="search-card">
+        <span class="eyebrow" style="margin-bottom:14px; display:block;">Tipo de producto</span>
+        <div class="pill-row" id="calc-type-pills">
+          <span class="pill active" data-value="liquido">Líquido</span>
+          <span class="pill" data-value="granulado">Granulado</span>
+        </div>
+
+        <div class="field-label" style="margin-top:18px;">Dosis indicada por el fabricante (por hectárea)</div>
+        <div class="calc-dose-row">
+          <input type="number" inputmode="decimal" id="calc-dose" class="calc-dose-input" placeholder="Ej. 2">
+          <div class="pill-row" id="calc-unit-pills"></div>
+        </div>
+
+        <div class="field-label" style="margin-top:18px;">Hectáreas a tratar</div>
+        <input type="number" inputmode="decimal" id="calc-hectares" class="calc-dose-input" style="width:100%;" placeholder="Ej. 3.5">
+      </div>
+
+      <div class="search-card" id="calc-result-card">
+        <span class="eyebrow" style="display:block;">Producto total necesario</span>
+        <div id="calc-result-empty" class="calc-empty">Ingresa la dosis y las hectáreas para ver el resultado.</div>
+        <div id="calc-result-filled" class="hidden">
+          <div class="calc-amount"><span id="calc-amount-value">—</span></div>
+          <div class="calc-equiv-list" id="calc-equiv-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="compare-foot"><span class="pin" style="color:var(--terra); font-family:var(--font-mono);">◍</span> Esta calculadora es una guía de referencia — sigue siempre las instrucciones y dosis de la etiqueta oficial del producto.</div>
   </div>
 </section>
 
@@ -1500,6 +1570,101 @@
   loadCatalogFromSupabase();
   loadCropsFromSupabase();
   loadSiteContent();
+
+  // ==================== CALCULADORA ====================
+  (function(){
+    var UNIT_FAMILIES = {
+      liquido: {
+        units: [
+          { key:'mL', label:'mL', toBase:1 },
+          { key:'L', label:'L', toBase:1000 }
+        ]
+      },
+      granulado: {
+        units: [
+          { key:'g', label:'g', toBase:1 },
+          { key:'kg', label:'kg', toBase:1000 },
+          { key:'ton', label:'ton', toBase:1000000 }
+        ]
+      }
+    };
+
+    var typeRow = document.getElementById('calc-type-pills');
+    var unitRow = document.getElementById('calc-unit-pills');
+    var doseInput = document.getElementById('calc-dose');
+    var haInput = document.getElementById('calc-hectares');
+    var emptyEl = document.getElementById('calc-result-empty');
+    var filledEl = document.getElementById('calc-result-filled');
+    var amountEl = document.getElementById('calc-amount-value');
+    var equivListEl = document.getElementById('calc-equiv-list');
+
+    var productType = 'liquido';
+    var doseUnit = 'mL';
+
+    function renderUnitPills(){
+      unitRow.innerHTML = '';
+      UNIT_FAMILIES[productType].units.forEach(function(u){
+        var pill = document.createElement('span');
+        pill.className = 'pill' + (u.key === doseUnit ? ' active' : '');
+        pill.setAttribute('data-value', u.key);
+        pill.textContent = u.label;
+        pill.addEventListener('click', function(){
+          doseUnit = u.key;
+          renderUnitPills();
+          recalc();
+        });
+        unitRow.appendChild(pill);
+      });
+    }
+
+    Array.prototype.slice.call(typeRow.querySelectorAll('.pill')).forEach(function(pill){
+      pill.addEventListener('click', function(){
+        productType = pill.getAttribute('data-value');
+        doseUnit = UNIT_FAMILIES[productType].units[0].key;
+        Array.prototype.slice.call(typeRow.querySelectorAll('.pill')).forEach(function(p){
+          p.classList.toggle('active', p === pill);
+        });
+        renderUnitPills();
+        recalc();
+      });
+    });
+
+    function fmtNum(n){
+      var rounded = Math.round(n * 100) / 100;
+      return rounded.toLocaleString('es-MX', { maximumFractionDigits: 2 });
+    }
+
+    function recalc(){
+      var dose = parseFloat(String(doseInput.value).replace(',', '.'));
+      var ha = parseFloat(String(haInput.value).replace(',', '.'));
+      var family = UNIT_FAMILIES[productType];
+      var unit = family.units.filter(function(u){ return u.key === doseUnit; })[0] || family.units[0];
+
+      if(!dose || !ha || dose <= 0 || ha <= 0){
+        emptyEl.classList.remove('hidden');
+        filledEl.classList.add('hidden');
+        return;
+      }
+
+      var totalBase = dose * unit.toBase * ha;
+      amountEl.textContent = fmtNum(totalBase / unit.toBase) + ' ' + unit.label;
+
+      equivListEl.innerHTML = '';
+      family.units.filter(function(u){ return u.key !== unit.key; }).forEach(function(u){
+        var row = document.createElement('div');
+        row.className = 'calc-equiv-row';
+        row.innerHTML = '<span class="l">Equivale a</span><span class="v">' + fmtNum(totalBase / u.toBase) + ' ' + u.label + '</span>';
+        equivListEl.appendChild(row);
+      });
+
+      emptyEl.classList.add('hidden');
+      filledEl.classList.remove('hidden');
+    }
+
+    renderUnitPills();
+    doseInput.addEventListener('input', recalc);
+    haInput.addEventListener('input', recalc);
+  })();
 
   // ==================== ADMIN ====================
   (function(){
