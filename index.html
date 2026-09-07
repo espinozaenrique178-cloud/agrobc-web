@@ -746,7 +746,7 @@
       <div>
         <span class="eyebrow" id="cms-hero_eyebrow">Baja California · Piloto 2026</span>
         <h1 style="margin-top:14px;"><span id="cms-hero_title">Busca un cultivo y un problema.</span> <em id="cms-hero_title_accent">Compara antes de comprar.</em></h1>
-        <p class="lede" id="cms-hero_lede">AgroBC reúne los productos agrícolas disponibles en Baja California —fertilizantes, insecticidas, fungicidas y más— para que agricultores y agrónomos comparen ficha técnica, presentación y precio en un solo lugar, sin favoritismos de marca.</p>
+        <p class="lede" id="cms-hero_lede">AgroBC reúne los productos agrícolas disponibles en Baja California —fertilizantes, insecticidas, fungicidas y más— para que agricultores y agrónomos comparen ficha técnica y presentación en un solo lugar, y encuentren al distribuidor más cercano, sin favoritismos de marca.</p>
         <div class="hero-actions">
           <a href="#validar" class="btn btn-primary">Quiero probarla</a>
           <a href="#comparador" class="btn btn-ghost">Ver el comparador</a>
@@ -813,7 +813,7 @@
       </div>
     </div>
     <div class="result-grid" id="result-grid"></div>
-    <div class="compare-foot"><span class="pin" style="color:var(--terra); font-family:var(--font-mono);">◍</span> Catálogo y precios de ejemplo para esta demostración. En la app real cada precio llevaría su fuente y fecha verificadas.</div>
+    <div class="compare-foot"><span class="pin" style="color:var(--terra); font-family:var(--font-mono);">◍</span> Catálogo de ejemplo para esta demostración.</div>
   </div>
 </section>
 
@@ -824,7 +824,7 @@
     <div class="section-head">
       <span class="eyebrow">La función central</span>
       <h2 style="margin-top:10px;">Un comparador, no un catálogo más</h2>
-      <p>Tres productos, criterios iguales, precio con su fuente y su fecha. Así se ve una búsqueda real de <strong>Tomate + Mosca blanca</strong>.</p>
+      <p>Tres productos, criterios iguales, ficha técnica con su fuente. Así se ve una búsqueda real de <strong>Tomate + Mosca blanca</strong>.</p>
     </div>
 
     <div class="compare-wrap">
@@ -868,26 +868,10 @@
             <td>1 kg</td>
             <td>500 g</td>
           </tr>
-          <tr>
-            <td class="rowlabel">Precio de ejemplo</td>
-            <td class="price-cell">
-              <span class="amount">$480</span>
-              <span class="source">Ejemplo · fabricante</span>
-              <span class="best-tag">Más reciente</span>
-            </td>
-            <td class="price-cell">
-              <span class="amount">$520</span>
-              <span class="source">Ejemplo · distribuidor</span>
-            </td>
-            <td class="price-cell">
-              <span class="amount">$310</span>
-              <span class="source">Ejemplo · distribuidor</span>
-            </td>
-          </tr>
         </tbody>
       </table>
     </div>
-    <div class="compare-foot"><span class="pin" style="color:var(--terra); font-family:var(--font-mono);">◍</span> Ningún fabricante paga por aparecer primero. En la app real, cada precio llevaría su fuente exacta y fecha de actualización — aquí son valores de ejemplo para la demostración.</div>
+    <div class="compare-foot"><span class="pin" style="color:var(--terra); font-family:var(--font-mono);">◍</span> Ningún fabricante paga por aparecer primero — valores de ejemplo para la demostración.</div>
   </div>
 </section>
 
@@ -1057,8 +1041,8 @@
     <div class="feature-grid">
       <div class="feature">
         <span class="num">01</span>
-        <h3>Precios sin contexto</h3>
-        <p>Un precio suelto, sin saber si lo dio el fabricante o un distribuidor, ni desde cuándo es válido.</p>
+        <h3>Sin contacto directo</h3>
+        <p>No queda claro qué distribuidor tiene el producto cerca ni cómo contactarlo directamente.</p>
       </div>
       <div class="feature">
         <span class="num">02</span>
@@ -1090,7 +1074,7 @@
       <div class="step">
         <span class="tag">02 — comparar</span>
         <h3>Revisa las opciones lado a lado</h3>
-        <p>Fabricante, ingrediente activo, presentación y precio con fuente y fecha, para dos o tres productos a la vez.</p>
+        <p>Fabricante, ingrediente activo y presentación, para dos o tres productos a la vez.</p>
       </div>
       <div class="step">
         <span class="tag">03 — verificar</span>
@@ -1463,11 +1447,7 @@
           ingredientRow +
           '<li><span>Presentación</span><span>' + escapeHtml(p.presentation) + '</span></li>' +
           '<li><span>Cultivo</span><span>' + escapeHtml(cropValue) + '</span></li>' +
-        '</ul>' +
-        '<div class="result-price">' +
-          '<span class="amount">' + fmtMoney(p.price) + '</span>' +
-          '<span class="source">Ejemplo · actualizado 23/08/2026</span>' +
-        '</div>';
+        '</ul>';
 
       var CAT_COLOR = { plaga:'--cat-plaga', enfermedad:'--cat-enfermedad', maleza:'--cat-maleza', nutricion:'--cat-nutricion' };
       var buyBtn = document.createElement('a');
