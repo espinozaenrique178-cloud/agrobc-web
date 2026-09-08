@@ -262,6 +262,34 @@
     box-shadow:0 4px 12px -4px color-mix(in srgb, var(--green) 60%, transparent);
   }
   .pill.hidden{display:none;}
+  /* Catálogo completo de cultivos: la lista se vuelve larga, así que se
+     limita la altura y se deja el control de volver siempre visible. */
+  .pill-row.expanded{
+    max-height:240px;
+    overflow-y:auto;
+    padding:4px;
+    margin:-4px;
+  }
+  .pill-toggle{
+    margin-top:10px;
+    font-size:0.9rem;
+    font-weight:700;
+    padding:9px 16px;
+    border-radius:24px;
+    border:1.5px dashed var(--green);
+    background:var(--green-tint);
+    color:var(--green-deep);
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .pill-toggle:hover{ background:color-mix(in srgb, var(--green-tint) 70%, var(--paper)); }
+  .catalog-note{
+    display:none;
+    font-size:0.8rem;
+    color:var(--stone);
+    margin:8px 0 0;
+  }
+  .catalog-note.show{display:block;}
   #problem-pills .pill[data-cat="plaga"].active{ background:var(--cat-plaga); border-color:var(--cat-plaga); box-shadow:0 4px 12px -4px color-mix(in srgb, var(--cat-plaga) 60%, transparent); }
   #problem-pills .pill[data-cat="enfermedad"].active{ background:var(--cat-enfermedad); border-color:var(--cat-enfermedad); box-shadow:0 4px 12px -4px color-mix(in srgb, var(--cat-enfermedad) 60%, transparent); }
   #problem-pills .pill[data-cat="maleza"].active{ background:var(--cat-maleza); border-color:var(--cat-maleza); box-shadow:0 4px 12px -4px color-mix(in srgb, var(--cat-maleza) 60%, transparent); }
@@ -775,6 +803,8 @@
           <span class="pill" data-value="Espárrago">🌱 Espárrago</span>
           <span class="pill" data-value="Alfalfa">🌾 Alfalfa</span>
         </div>
+        <button type="button" class="pill-toggle" id="crop-toggle">··· Ver todos los cultivos</button>
+        <p class="catalog-note" id="crop-catalog-note"></p>
         <p class="empty-note" id="crop-empty">Sin coincidencias — se usará "<span></span>" como cultivo escrito.</p>
 
         <div class="field-label">Problema</div>
@@ -1288,6 +1318,55 @@
 
 <script>
 (function(){
+  // Catálogo completo de cultivos, depurado de datos oficiales de SIAP (Servicio
+  // de Información Agroalimentaria y Pesquera). Los 12 destacados de Baja
+  // California siguen hardcodeados como pills en el HTML; esta lista es a la que
+  // se llega con el control "Ver todos los cultivos".
+  var ALL_CROPS = [
+    'Aceituna', 'Acelga', 'Achiote', 'Agapando', 'Agave', 'Aguacate', 'Ajo', 'Ajonjolí', 'Albahaca',
+    'Albricia', 'Alcachofa', 'Alcatraz', 'Alfalfa achicalada', 'Alfalfa verde', 'Algarrobo',
+    'Algodón hueso', 'Alhelí', 'Alpiste', 'Alstroemeria', 'Amaranto', 'Anturios', 'Anís', 'Apio',
+    'Aretillo', 'Arrayán', 'Arroz palay', 'Arvejón', 'Arándano', 'Aster', 'Ave del paraíso',
+    'Avena forrajera achicalada', 'Avena forrajera en verde', 'Avena grano', 'Baby back choi',
+    'Bambú', 'Bangaña', 'Begonia', 'Belén', 'Berenjena', 'Betabel', 'Boi choi', 'Brócoli',
+    'Cacahuate', 'Cacao', 'Café cereza', 'Caimito', 'Calabacita', 'Calabaza',
+    'Calabaza semilla o chihua', 'Calancoe', 'Camote', 'Canola', 'Capulín', 'Carambolo',
+    'Caña de azúcar', 'Caña de azúcar forrajera', 'Caña de azúcar fruta',
+    'Caña de azúcar piloncillo', 'Cebada forrajera achicalada', 'Cebada forrajera en verde',
+    'Cebada grano', 'Cebolla', 'Centeno grano', 'Cereza', 'Chabacano', 'Chayote', 'Chilacayote',
+    'Chile seco', 'Chile verde', 'Chirimoya', 'Chives', 'Chía', 'Chícharo', 'Cilantro', 'Cineraria',
+    'Ciruela', 'Clavel', 'Clyptoria', 'Coco fruta', 'Col (repollo)', 'Col de bruselas', 'Coliflor',
+    'Comino', 'Copra', 'Coquia', 'Crisantemo', 'Cyclamen', 'Cártamo', 'Cártamo forrajero en verde',
+    'Dalia', 'Durazno', 'Dátil', 'Dólar', 'Ebo (janamargo o veza)', 'Ebo (janamargo o veza) grano',
+    'Ejote', 'Elote', 'Eneldo', 'Epazote', 'Espinaca', 'Espárrago', 'Estropajo', 'Eucalipto',
+    'Flor cera', 'Flor perrito', 'Frambuesa', 'Fresa', 'Frijol', 'Frijol forrajero',
+    'Frijol x pelón', 'Gai lan (kay laan)', 'Garbanzo forrajero', 'Garbanzo grano',
+    'Garbanzo porquero', 'Geranio', 'Gerbera', 'Girasol', 'Girasol flor', 'Girasol forrajero',
+    'Gladiola', 'Granada', 'Guaje', 'Guamúchil', 'Guanábana', 'Guayaba', 'Haba grano', 'Haba verde',
+    'Helecho', 'Henequén', 'Hierbabuena', 'Higo', 'Hoja de plátano (belillo)', 'Hortensia',
+    'Huauzontle', 'Hule hevea', 'Inmortal', 'Jaca (jackfruit)', 'Jamaica', 'Jatropha', 'Jengibre',
+    'Jícama', 'Kale', 'Kohlrabi', 'Lechuga', 'Lenteja', 'Lilium', 'Lima', 'Limonium', 'Limón',
+    'Limón real', 'Litchi', 'Macadamia', 'Maguey', 'Maguey forrajero', 'Maguey mixiotero',
+    'Maguey pulquero (miles de lts.)', 'Malanga', 'Mamey', 'Mandarina', 'Mango', 'Mangostán',
+    'Mano de león', 'Manzana', 'Manzanilla', 'Maracuyá', 'Marañón', 'Margarita',
+    'Maíz forrajero en verde', 'Maíz forrajero seco', 'Maíz grano', 'Mejorana', 'Melón',
+    'Melón amargo', 'Membrillo', 'Menta', 'Moringa', 'Nabo', 'Nabo forrajero', 'Nanche', 'Napa',
+    'Naranja', 'Nardo', 'Nochebuena', 'Noni', 'Nopal forrajero', 'Nopalitos', 'Nube', 'Nuez',
+    'Níspero', 'Okra (angú o gombo)', 'Orquídea', 'Orégano', 'Palma africana o de aceite',
+    'Palma camedor', 'Palma de ornato', 'Palma taco', 'Papa', 'Papaya', 'Pasto tapete (m2)',
+    'Pastos y praderas', 'Pensamiento', 'Pepino', 'Pera', 'Perejil', 'Persimonio', 'Perón',
+    'Petunia', 'Pimienta', 'Pipicha', 'Pistache', 'Pitahaya', 'Pitaya', 'Piña', 'Piñón',
+    'Plantero de tabaco', 'Plátano', 'Polar', 'Pon-pon', 'Poro (leek)', 'Pápalo', 'Quelite',
+    'Rambután', 'Romerito', 'Romero', 'Rosa', 'Rábano', 'Salvia', 'Sandía', 'Saramuyo',
+    'Shangai-bock-choy', 'Shop suey', 'Solidago', 'Sorgo escobero', 'Sorgo forrajero achicalado',
+    'Sorgo forrajero en verde', 'Sorgo forrajero seco', 'Sorgo grano', 'Soya', 'Statice', 'Stevia',
+    'Sábila', 'Tabaco', 'Tamarindo', 'Tangelo', 'Tangerina', 'Tarragón', 'Tejocote', 'Terciopelo',
+    'Tomate rojo (jitomate)', 'Tomate verde', 'Tomillo', 'Toronja (pomelo)', 'Trigo forrajero verde',
+    'Trigo grano', 'Triticale forrajero en verde', 'Triticale grano', 'Trébol', 'Tulipán holandés',
+    'Tuna', 'Té limón', 'Uva', 'Vainilla', 'Verdolaga', 'Yu-choy', 'Yuca alimenticia', 'Zanahoria',
+    'Zapote', 'Zapupe', 'Zarzamora', 'Zempoalxochitl', 'Árbol de navidad',
+  ];
+
   var CATEGORY_BY_PROBLEM = {
     'Plaga':'plaga', 'Mosca blanca':'plaga', 'Pulgón':'plaga', 'Araña roja':'plaga', 'Trips':'plaga',
     'Enfermedad':'enfermedad',
@@ -1468,15 +1547,21 @@
     });
   }
 
-  function setupField(prefix, defaultValue){
+  // `catalog` es opcional: si se pasa (y existe el botón #<prefix>-toggle), el
+  // campo puede desplegar el catálogo completo además de los destacados.
+  function setupField(prefix, defaultValue, catalog){
     var search = document.getElementById(prefix + '-search');
     var row = document.getElementById(prefix + '-pills');
     var pills = Array.prototype.slice.call(row.querySelectorAll('.pill'));
     var emptyNote = document.getElementById(prefix + '-empty');
     var emptySpan = emptyNote.querySelector('span');
+    var toggle = document.getElementById(prefix + '-toggle');
+    var catalogNote = document.getElementById(prefix + '-catalog-note');
     var current = defaultValue;
+    var expanded = false;
+    var catalogLoaded = false;
 
-    function select(value, fromPill){
+    function select(value){
       current = value;
       pills.forEach(function(p){
         p.classList.toggle('active', p.getAttribute('data-value') === value);
@@ -1486,37 +1571,49 @@
 
     function bindPill(pill){
       pill.addEventListener('click', function(){
-        select(pill.getAttribute('data-value'), true);
+        select(pill.getAttribute('data-value'));
       });
     }
     pills.forEach(bindPill);
 
-    function addPill(value, label){
+    // isExtra marca los que vienen del catálogo completo; los destacados (HTML)
+    // y los que llegan de Supabase quedan siempre visibles.
+    function addPill(value, label, isExtra){
       if(pills.some(function(p){ return p.getAttribute('data-value') === value; })) return;
       var el = document.createElement('span');
       el.className = 'pill';
       el.setAttribute('data-value', value);
+      if(isExtra) el.setAttribute('data-extra', '1');
+      if(value === current) el.classList.add('active');
       el.textContent = label;
       row.appendChild(el);
       pills.push(el);
       bindPill(el);
     }
 
-    search.addEventListener('input', function(){
+    // Visible = (destacado o catálogo desplegado) y coincide con la búsqueda.
+    function applyVisibility(){
       var q = search.value.trim().toLowerCase();
       var anyVisible = false;
       pills.forEach(function(p){
-        var match = p.getAttribute('data-value').toLowerCase().indexOf(q) !== -1;
-        p.classList.toggle('hidden', q.length > 0 && !match);
-        if(match) anyVisible = true;
+        var inScope = expanded || p.getAttribute('data-extra') !== '1';
+        var match = q.length === 0 || p.getAttribute('data-value').toLowerCase().indexOf(q) !== -1;
+        var visible = inScope && match;
+        p.classList.toggle('hidden', !visible);
+        if(visible) anyVisible = true;
       });
-      if(q.length > 0 && !anyVisible){
+      return { q: q, anyVisible: anyVisible };
+    }
+
+    search.addEventListener('input', function(){
+      var state = applyVisibility();
+      if(state.q.length > 0 && !state.anyVisible){
         emptySpan.textContent = search.value.trim();
         emptyNote.classList.add('show');
         select(search.value.trim());
       } else {
         emptyNote.classList.remove('show');
-        if(q.length > 0){
+        if(state.q.length > 0){
           var firstMatch = pills.filter(function(p){ return !p.classList.contains('hidden'); })[0];
           if(firstMatch && !pills.some(function(p){ return p.classList.contains('active') && !p.classList.contains('hidden'); })){
             select(firstMatch.getAttribute('data-value'));
@@ -1525,10 +1622,27 @@
       }
     });
 
+    if(toggle && catalog){
+      toggle.addEventListener('click', function(){
+        expanded = !expanded;
+        if(expanded && !catalogLoaded){
+          catalog.forEach(function(name){ addPill(name, name, true); });
+          catalogLoaded = true;
+        }
+        toggle.textContent = expanded ? '← Ver solo destacados' : '··· Ver todos los cultivos';
+        row.classList.toggle('expanded', expanded);
+        if(catalogNote){
+          catalogNote.textContent = 'Catálogo completo (' + pills.length + ' cultivos) — usa el buscador de arriba para filtrar.';
+          catalogNote.classList.toggle('show', expanded);
+        }
+        applyVisibility();
+      });
+    }
+
     return { get: function(){ return current || defaultValue; }, addPill: addPill };
   }
 
-  var crop = setupField('crop', 'Tomate');
+  var crop = setupField('crop', 'Tomate', ALL_CROPS);
   var problem = setupField('problem', 'Plaga');
   var cta = document.getElementById('search-cta');
 
