@@ -262,6 +262,34 @@
     box-shadow:0 4px 12px -4px color-mix(in srgb, var(--green) 60%, transparent);
   }
   .pill.hidden{display:none;}
+  /* Catálogo completo de cultivos: la lista se vuelve larga, así que se
+     limita la altura y se deja el control de volver siempre visible. */
+  .pill-row.expanded{
+    max-height:240px;
+    overflow-y:auto;
+    padding:4px;
+    margin:-4px;
+  }
+  .pill-toggle{
+    margin-top:10px;
+    font-size:0.9rem;
+    font-weight:700;
+    padding:9px 16px;
+    border-radius:24px;
+    border:1.5px dashed var(--green);
+    background:var(--green-tint);
+    color:var(--green-deep);
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .pill-toggle:hover{ background:color-mix(in srgb, var(--green-tint) 70%, var(--paper)); }
+  .catalog-note{
+    display:none;
+    font-size:0.8rem;
+    color:var(--stone);
+    margin:8px 0 0;
+  }
+  .catalog-note.show{display:block;}
   #problem-pills .pill[data-cat="plaga"].active{ background:var(--cat-plaga); border-color:var(--cat-plaga); box-shadow:0 4px 12px -4px color-mix(in srgb, var(--cat-plaga) 60%, transparent); }
   #problem-pills .pill[data-cat="enfermedad"].active{ background:var(--cat-enfermedad); border-color:var(--cat-enfermedad); box-shadow:0 4px 12px -4px color-mix(in srgb, var(--cat-enfermedad) 60%, transparent); }
   #problem-pills .pill[data-cat="maleza"].active{ background:var(--cat-maleza); border-color:var(--cat-maleza); box-shadow:0 4px 12px -4px color-mix(in srgb, var(--cat-maleza) 60%, transparent); }
@@ -775,6 +803,8 @@
           <span class="pill" data-value="Espárrago">🌱 Espárrago</span>
           <span class="pill" data-value="Alfalfa">🌾 Alfalfa</span>
         </div>
+        <button type="button" class="pill-toggle" id="crop-toggle">··· Ver todos los cultivos</button>
+        <p class="catalog-note" id="crop-catalog-note"></p>
         <p class="empty-note" id="crop-empty">Sin coincidencias — se usará "<span></span>" como cultivo escrito.</p>
 
         <div class="field-label">Problema</div>
@@ -791,6 +821,8 @@
           <span class="pill" data-value="Araña roja" data-cat="plaga">🕷️ Araña roja</span>
           <span class="pill" data-value="Trips" data-cat="plaga">🍂 Trips</span>
         </div>
+        <button type="button" class="pill-toggle" id="problem-toggle">··· Ver todos los problemas</button>
+        <p class="catalog-note" id="problem-catalog-note"></p>
         <p class="empty-note" id="problem-empty">Sin coincidencias — se usará "<span></span>" como problema escrito.</p>
 
         <button type="button" class="btn btn-primary go" id="search-cta">Buscar: Tomate + Plaga</button>
@@ -1288,12 +1320,114 @@
 
 <script>
 (function(){
-  var CATEGORY_BY_PROBLEM = {
+  // Quita acentos y pasa a minúsculas para que "maiz" encuentre "Maíz" y
+  // "arana" encuentre "Araña roja".
+  function normalizeText(text){
+    return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  }
+
+  // Catálogo completo de cultivos, depurado de datos oficiales de SIAP (Servicio
+  // de Información Agroalimentaria y Pesquera). Los 12 destacados de Baja
+  // California siguen hardcodeados como pills en el HTML; esta lista es a la que
+  // se llega con el control "Ver todos los cultivos".
+  var ALL_CROPS = [
+    'Aceituna', 'Acelga', 'Achiote', 'Agapando', 'Agave', 'Aguacate', 'Ajo', 'Ajonjolí', 'Albahaca',
+    'Albricia', 'Alcachofa', 'Alcatraz', 'Alfalfa', 'Algarrobo', 'Algodón hueso', 'Alhelí',
+    'Alpiste', 'Alstroemeria', 'Amaranto', 'Anís', 'Anturios', 'Apio', 'Arándano',
+    'Árbol de navidad', 'Aretillo', 'Arrayán', 'Arroz palay', 'Arvejón', 'Aster', 'Ave del paraíso',
+    'Avena', 'Baby back choi', 'Bambú', 'Bangaña', 'Begonia', 'Belén', 'Berenjena', 'Betabel',
+    'Boi choi', 'Brócoli', 'Cacahuate', 'Cacao', 'Café cereza', 'Caimito', 'Calabacita', 'Calabaza',
+    'Calabaza semilla o chihua', 'Calancoe', 'Camote', 'Caña de azúcar', 'Canola', 'Capulín',
+    'Carambolo', 'Cártamo', 'Cebada', 'Cebolla', 'Centeno grano', 'Cereza', 'Chabacano', 'Chayote',
+    'Chía', 'Chícharo', 'Chilacayote', 'Chile seco', 'Chile verde', 'Chirimoya', 'Chives',
+    'Cilantro', 'Cineraria', 'Ciruela', 'Clavel', 'Clyptoria', 'Coco fruta', 'Col (repollo)',
+    'Col de bruselas', 'Coliflor', 'Comino', 'Copra', 'Coquia', 'Crisantemo', 'Cyclamen', 'Dalia',
+    'Dátil', 'Dólar', 'Durazno', 'Ebo (janamargo o veza)', 'Ejote', 'Elote', 'Eneldo', 'Epazote',
+    'Espárrago', 'Espinaca', 'Estropajo', 'Eucalipto', 'Flor cera', 'Flor perrito', 'Frambuesa',
+    'Fresa', 'Frijol', 'Frijol x pelón', 'Gai lan (kay laan)', 'Garbanzo', 'Geranio', 'Gerbera',
+    'Girasol', 'Girasol flor', 'Gladiola', 'Granada', 'Guaje', 'Guamúchil', 'Guanábana', 'Guayaba',
+    'Haba grano', 'Haba verde', 'Helecho', 'Henequén', 'Hierbabuena', 'Higo',
+    'Hoja de plátano (belillo)', 'Hortensia', 'Huauzontle', 'Hule hevea', 'Inmortal',
+    'Jaca (jackfruit)', 'Jamaica', 'Jatropha', 'Jengibre', 'Jícama', 'Kale', 'Kohlrabi', 'Lechuga',
+    'Lenteja', 'Lilium', 'Lima', 'Limón', 'Limón real', 'Limonium', 'Litchi', 'Macadamia', 'Maguey',
+    'Maguey forrajero', 'Maguey mixiotero', 'Maguey pulquero (miles de lts.)', 'Maíz', 'Malanga',
+    'Mamey', 'Mandarina', 'Mango', 'Mangostán', 'Mano de león', 'Manzana', 'Manzanilla', 'Maracuyá',
+    'Marañón', 'Margarita', 'Mejorana', 'Melón', 'Melón amargo', 'Membrillo', 'Menta', 'Moringa',
+    'Nabo', 'Nanche', 'Napa', 'Naranja', 'Nardo', 'Níspero', 'Nochebuena', 'Noni', 'Nopal forrajero',
+    'Nopalitos', 'Nube', 'Nuez', 'Okra (angú o gombo)', 'Orégano', 'Orquídea',
+    'Palma africana o de aceite', 'Palma camedor', 'Palma de ornato', 'Palma taco', 'Papa', 'Pápalo',
+    'Papaya', 'Pasto tapete (m2)', 'Pastos y praderas', 'Pensamiento', 'Pepino', 'Pera', 'Perejil',
+    'Perón', 'Persimonio', 'Petunia', 'Pimienta', 'Piña', 'Piñón', 'Pipicha', 'Pistache', 'Pitahaya',
+    'Pitaya', 'Plantero de tabaco', 'Plátano', 'Polar', 'Pon-pon', 'Poro (leek)', 'Quelite',
+    'Rábano', 'Rambután', 'Romerito', 'Romero', 'Rosa', 'Sábila', 'Salvia', 'Sandía', 'Saramuyo',
+    'Shangai-bock-choy', 'Shop suey', 'Solidago', 'Sorgo', 'Sorgo escobero', 'Soya', 'Statice',
+    'Stevia', 'Tabaco', 'Tamarindo', 'Tangelo', 'Tangerina', 'Tarragón', 'Té limón', 'Tejocote',
+    'Terciopelo', 'Tomate rojo (jitomate)', 'Tomate verde', 'Tomillo', 'Toronja (pomelo)', 'Trébol',
+    'Trigo', 'Triticale', 'Tulipán holandés', 'Tuna', 'Uva', 'Vainilla', 'Verdolaga', 'Yu-choy',
+    'Yuca alimenticia', 'Zanahoria', 'Zapote', 'Zapupe', 'Zarzamora', 'Zempoalxochitl',
+  ];
+
+  // Catálogo completo de problemas: selección curada de plagas, enfermedades,
+  // malezas y deficiencias nutricionales comunes en cultivos de México. No
+  // existe una fuente oficial única (como SIAP para cultivos) para este caso.
+  var ALL_PROBLEMS = [
+    'Plaga', 'Enfermedad', 'Maleza', 'Nutrición', 'Mosca blanca', 'Pulgón', 'Araña roja', 'Trips',
+    'Minador de la hoja', 'Gusano cogollero', 'Gusano soldado', 'Palomilla dorso de diamante',
+    'Barrenador del tallo', 'Picudo del algodonero', 'Mosca de la fruta', 'Gallina ciega',
+    'Gusano de alambre', 'Chapulín', 'Cochinilla', 'Escama', 'Nematodos', 'Barrenador del fruto',
+    'Chinche apestosa', 'Rata de campo', 'Caracol y babosa', 'Ácaro blanco', 'Ácaro del bronceado',
+    'Diabrótica', 'Barrenador del brote', 'Psílido asiático de los cítricos',
+    'Barrenador del hueso (aguacate)', 'Falso medidor', 'Tizón tardío', 'Tizón temprano',
+    'Cenicilla (oídio)', 'Mildiu velloso', 'Roya', 'Antracnosis', 'Fusarium (marchitez)',
+    'Verticilosis', 'Pudrición de raíz', 'Pudrición gris (Botritis)', 'Mancha bacteriana',
+    'Cancro bacteriano', 'Virus del mosaico', 'Virus del rizado amarillo',
+    'Damping-off (ahogamiento de plántula)', 'Carbón', 'Huanglongbing (dragón amarillo)', 'Sarna',
+    'Zacate Johnson', 'Coquillo (coyolillo)', 'Correhuela', 'Zacate pata de gallina',
+    'Diente de león', 'Quelite cenizo', 'Campanilla (Ipomoea)', 'Golondrina (lechosa)', 'Malva',
+    'Zacate Bermuda', 'Toloache', 'Rábano silvestre', 'Cardo', 'Trompillo',
+    'Deficiencia de nitrógeno', 'Deficiencia de fósforo', 'Deficiencia de potasio',
+    'Deficiencia de calcio', 'Deficiencia de magnesio', 'Deficiencia de azufre',
+    'Deficiencia de hierro', 'Deficiencia de zinc', 'Deficiencia de boro',
+    'Deficiencia de manganeso', 'Deficiencia de cobre', 'Deficiencia de molibdeno',
+  ];
+
+  var PROBLEM_CATEGORY_ADDITIONS = {
+    'Minador de la hoja':'plaga', 'Gusano cogollero':'plaga', 'Gusano soldado':'plaga',
+    'Palomilla dorso de diamante':'plaga', 'Barrenador del tallo':'plaga',
+    'Picudo del algodonero':'plaga', 'Mosca de la fruta':'plaga', 'Gallina ciega':'plaga',
+    'Gusano de alambre':'plaga', 'Chapulín':'plaga', 'Cochinilla':'plaga', 'Escama':'plaga',
+    'Nematodos':'plaga', 'Barrenador del fruto':'plaga', 'Chinche apestosa':'plaga',
+    'Rata de campo':'plaga', 'Caracol y babosa':'plaga', 'Ácaro blanco':'plaga',
+    'Ácaro del bronceado':'plaga', 'Diabrótica':'plaga', 'Barrenador del brote':'plaga',
+    'Psílido asiático de los cítricos':'plaga', 'Barrenador del hueso (aguacate)':'plaga',
+    'Falso medidor':'plaga',
+    'Tizón tardío':'enfermedad', 'Tizón temprano':'enfermedad', 'Cenicilla (oídio)':'enfermedad',
+    'Mildiu velloso':'enfermedad', 'Roya':'enfermedad', 'Antracnosis':'enfermedad',
+    'Fusarium (marchitez)':'enfermedad', 'Verticilosis':'enfermedad',
+    'Pudrición de raíz':'enfermedad', 'Pudrición gris (Botritis)':'enfermedad',
+    'Mancha bacteriana':'enfermedad', 'Cancro bacteriano':'enfermedad',
+    'Virus del mosaico':'enfermedad', 'Virus del rizado amarillo':'enfermedad',
+    'Damping-off (ahogamiento de plántula)':'enfermedad', 'Carbón':'enfermedad',
+    'Huanglongbing (dragón amarillo)':'enfermedad', 'Sarna':'enfermedad',
+    'Zacate Johnson':'maleza', 'Coquillo (coyolillo)':'maleza', 'Correhuela':'maleza',
+    'Zacate pata de gallina':'maleza', 'Diente de león':'maleza', 'Quelite cenizo':'maleza',
+    'Campanilla (Ipomoea)':'maleza', 'Golondrina (lechosa)':'maleza', 'Malva':'maleza',
+    'Zacate Bermuda':'maleza', 'Toloache':'maleza', 'Rábano silvestre':'maleza',
+    'Cardo':'maleza', 'Trompillo':'maleza',
+    'Deficiencia de nitrógeno':'nutricion', 'Deficiencia de fósforo':'nutricion',
+    'Deficiencia de potasio':'nutricion', 'Deficiencia de calcio':'nutricion',
+    'Deficiencia de magnesio':'nutricion', 'Deficiencia de azufre':'nutricion',
+    'Deficiencia de hierro':'nutricion', 'Deficiencia de zinc':'nutricion',
+    'Deficiencia de boro':'nutricion', 'Deficiencia de manganeso':'nutricion',
+    'Deficiencia de cobre':'nutricion', 'Deficiencia de molibdeno':'nutricion',
+  };
+
+  var CATEGORY_BY_PROBLEM = Object.assign({
     'Plaga':'plaga', 'Mosca blanca':'plaga', 'Pulgón':'plaga', 'Araña roja':'plaga', 'Trips':'plaga',
     'Enfermedad':'enfermedad',
     'Maleza':'maleza',
     'Nutrición':'nutricion'
-  };
+  }, PROBLEM_CATEGORY_ADDITIONS);
 
   var PRODUCTS = [
     { mfg:'Bayer', domain:'bayer.com', name:'Sivanto Prime', type:'Insecticida', ingredient:'Flupyradifurona', presentation:'1 L', price:480, category:'plaga', crops:['Tomate','Fresa','Chile','Pepino','Lechuga'] },
@@ -1468,15 +1602,24 @@
     });
   }
 
-  function setupField(prefix, defaultValue){
+  // `catalog` es opcional: si se pasa (y existe el botón #<prefix>-toggle), el
+  // campo puede desplegar el catálogo completo además de los destacados.
+  // `catalogCatMap` (opcional) asigna data-cat a cada pill nuevo, para que
+  // conserve el color por categoría (usado en Problema). `noun` es la palabra
+  // que se muestra en el texto del botón y la nota ("cultivos"/"problemas").
+  function setupField(prefix, defaultValue, catalog, catalogCatMap, noun){
     var search = document.getElementById(prefix + '-search');
     var row = document.getElementById(prefix + '-pills');
     var pills = Array.prototype.slice.call(row.querySelectorAll('.pill'));
     var emptyNote = document.getElementById(prefix + '-empty');
     var emptySpan = emptyNote.querySelector('span');
+    var toggle = document.getElementById(prefix + '-toggle');
+    var catalogNote = document.getElementById(prefix + '-catalog-note');
     var current = defaultValue;
+    var expanded = false;
+    var catalogLoaded = false;
 
-    function select(value, fromPill){
+    function select(value){
       current = value;
       pills.forEach(function(p){
         p.classList.toggle('active', p.getAttribute('data-value') === value);
@@ -1486,37 +1629,50 @@
 
     function bindPill(pill){
       pill.addEventListener('click', function(){
-        select(pill.getAttribute('data-value'), true);
+        select(pill.getAttribute('data-value'));
       });
     }
     pills.forEach(bindPill);
 
-    function addPill(value, label){
+    // isExtra marca los que vienen del catálogo completo; los destacados (HTML)
+    // y los que llegan de Supabase quedan siempre visibles.
+    function addPill(value, label, isExtra){
       if(pills.some(function(p){ return p.getAttribute('data-value') === value; })) return;
       var el = document.createElement('span');
       el.className = 'pill';
       el.setAttribute('data-value', value);
+      if(isExtra) el.setAttribute('data-extra', '1');
+      if(catalogCatMap && catalogCatMap[value]) el.setAttribute('data-cat', catalogCatMap[value]);
+      if(value === current) el.classList.add('active');
       el.textContent = label;
       row.appendChild(el);
       pills.push(el);
       bindPill(el);
     }
 
-    search.addEventListener('input', function(){
-      var q = search.value.trim().toLowerCase();
+    // Visible = (destacado o catálogo desplegado) y coincide con la búsqueda.
+    function applyVisibility(){
+      var q = normalizeText(search.value.trim());
       var anyVisible = false;
       pills.forEach(function(p){
-        var match = p.getAttribute('data-value').toLowerCase().indexOf(q) !== -1;
-        p.classList.toggle('hidden', q.length > 0 && !match);
-        if(match) anyVisible = true;
+        var inScope = expanded || p.getAttribute('data-extra') !== '1';
+        var match = q.length === 0 || normalizeText(p.getAttribute('data-value')).indexOf(q) !== -1;
+        var visible = inScope && match;
+        p.classList.toggle('hidden', !visible);
+        if(visible) anyVisible = true;
       });
-      if(q.length > 0 && !anyVisible){
+      return { q: q, anyVisible: anyVisible };
+    }
+
+    search.addEventListener('input', function(){
+      var state = applyVisibility();
+      if(state.q.length > 0 && !state.anyVisible){
         emptySpan.textContent = search.value.trim();
         emptyNote.classList.add('show');
         select(search.value.trim());
       } else {
         emptyNote.classList.remove('show');
-        if(q.length > 0){
+        if(state.q.length > 0){
           var firstMatch = pills.filter(function(p){ return !p.classList.contains('hidden'); })[0];
           if(firstMatch && !pills.some(function(p){ return p.classList.contains('active') && !p.classList.contains('hidden'); })){
             select(firstMatch.getAttribute('data-value'));
@@ -1525,11 +1681,28 @@
       }
     });
 
+    if(toggle && catalog){
+      toggle.addEventListener('click', function(){
+        expanded = !expanded;
+        if(expanded && !catalogLoaded){
+          catalog.forEach(function(name){ addPill(name, name, true); });
+          catalogLoaded = true;
+        }
+        toggle.textContent = expanded ? '← Ver solo destacados' : ('··· Ver todos los ' + noun);
+        row.classList.toggle('expanded', expanded);
+        if(catalogNote){
+          catalogNote.textContent = 'Catálogo completo (' + pills.length + ' ' + noun + ') — usa el buscador de arriba para filtrar.';
+          catalogNote.classList.toggle('show', expanded);
+        }
+        applyVisibility();
+      });
+    }
+
     return { get: function(){ return current || defaultValue; }, addPill: addPill };
   }
 
-  var crop = setupField('crop', 'Tomate');
-  var problem = setupField('problem', 'Plaga');
+  var crop = setupField('crop', 'Tomate', ALL_CROPS, null, 'cultivos');
+  var problem = setupField('problem', 'Plaga', ALL_PROBLEMS, PROBLEM_CATEGORY_ADDITIONS, 'problemas');
   var cta = document.getElementById('search-cta');
 
   var CTA_CAT_COLOR = { plaga:'--cat-plaga', enfermedad:'--cat-enfermedad', maleza:'--cat-maleza', nutricion:'--cat-nutricion' };
