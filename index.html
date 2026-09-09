@@ -821,6 +821,8 @@
           <span class="pill" data-value="Araña roja" data-cat="plaga">🕷️ Araña roja</span>
           <span class="pill" data-value="Trips" data-cat="plaga">🍂 Trips</span>
         </div>
+        <button type="button" class="pill-toggle" id="problem-toggle">··· Ver todos los problemas</button>
+        <p class="catalog-note" id="problem-catalog-note"></p>
         <p class="empty-note" id="problem-empty">Sin coincidencias — se usará "<span></span>" como problema escrito.</p>
 
         <button type="button" class="btn btn-primary go" id="search-cta">Buscar: Tomate + Plaga</button>
@@ -1365,12 +1367,67 @@
     'Yuca alimenticia', 'Zanahoria', 'Zapote', 'Zapupe', 'Zarzamora', 'Zempoalxochitl',
   ];
 
-  var CATEGORY_BY_PROBLEM = {
+  // Catálogo completo de problemas: selección curada de plagas, enfermedades,
+  // malezas y deficiencias nutricionales comunes en cultivos de México. No
+  // existe una fuente oficial única (como SIAP para cultivos) para este caso.
+  var ALL_PROBLEMS = [
+    'Plaga', 'Enfermedad', 'Maleza', 'Nutrición', 'Mosca blanca', 'Pulgón', 'Araña roja', 'Trips',
+    'Minador de la hoja', 'Gusano cogollero', 'Gusano soldado', 'Palomilla dorso de diamante',
+    'Barrenador del tallo', 'Picudo del algodonero', 'Mosca de la fruta', 'Gallina ciega',
+    'Gusano de alambre', 'Chapulín', 'Cochinilla', 'Escama', 'Nematodos', 'Barrenador del fruto',
+    'Chinche apestosa', 'Rata de campo', 'Caracol y babosa', 'Ácaro blanco', 'Ácaro del bronceado',
+    'Diabrótica', 'Barrenador del brote', 'Psílido asiático de los cítricos',
+    'Barrenador del hueso (aguacate)', 'Falso medidor', 'Tizón tardío', 'Tizón temprano',
+    'Cenicilla (oídio)', 'Mildiu velloso', 'Roya', 'Antracnosis', 'Fusarium (marchitez)',
+    'Verticilosis', 'Pudrición de raíz', 'Pudrición gris (Botritis)', 'Mancha bacteriana',
+    'Cancro bacteriano', 'Virus del mosaico', 'Virus del rizado amarillo',
+    'Damping-off (ahogamiento de plántula)', 'Carbón', 'Huanglongbing (dragón amarillo)', 'Sarna',
+    'Zacate Johnson', 'Coquillo (coyolillo)', 'Correhuela', 'Zacate pata de gallina',
+    'Diente de león', 'Quelite cenizo', 'Campanilla (Ipomoea)', 'Golondrina (lechosa)', 'Malva',
+    'Zacate Bermuda', 'Toloache', 'Rábano silvestre', 'Cardo', 'Trompillo',
+    'Deficiencia de nitrógeno', 'Deficiencia de fósforo', 'Deficiencia de potasio',
+    'Deficiencia de calcio', 'Deficiencia de magnesio', 'Deficiencia de azufre',
+    'Deficiencia de hierro', 'Deficiencia de zinc', 'Deficiencia de boro',
+    'Deficiencia de manganeso', 'Deficiencia de cobre', 'Deficiencia de molibdeno',
+  ];
+
+  var PROBLEM_CATEGORY_ADDITIONS = {
+    'Minador de la hoja':'plaga', 'Gusano cogollero':'plaga', 'Gusano soldado':'plaga',
+    'Palomilla dorso de diamante':'plaga', 'Barrenador del tallo':'plaga',
+    'Picudo del algodonero':'plaga', 'Mosca de la fruta':'plaga', 'Gallina ciega':'plaga',
+    'Gusano de alambre':'plaga', 'Chapulín':'plaga', 'Cochinilla':'plaga', 'Escama':'plaga',
+    'Nematodos':'plaga', 'Barrenador del fruto':'plaga', 'Chinche apestosa':'plaga',
+    'Rata de campo':'plaga', 'Caracol y babosa':'plaga', 'Ácaro blanco':'plaga',
+    'Ácaro del bronceado':'plaga', 'Diabrótica':'plaga', 'Barrenador del brote':'plaga',
+    'Psílido asiático de los cítricos':'plaga', 'Barrenador del hueso (aguacate)':'plaga',
+    'Falso medidor':'plaga',
+    'Tizón tardío':'enfermedad', 'Tizón temprano':'enfermedad', 'Cenicilla (oídio)':'enfermedad',
+    'Mildiu velloso':'enfermedad', 'Roya':'enfermedad', 'Antracnosis':'enfermedad',
+    'Fusarium (marchitez)':'enfermedad', 'Verticilosis':'enfermedad',
+    'Pudrición de raíz':'enfermedad', 'Pudrición gris (Botritis)':'enfermedad',
+    'Mancha bacteriana':'enfermedad', 'Cancro bacteriano':'enfermedad',
+    'Virus del mosaico':'enfermedad', 'Virus del rizado amarillo':'enfermedad',
+    'Damping-off (ahogamiento de plántula)':'enfermedad', 'Carbón':'enfermedad',
+    'Huanglongbing (dragón amarillo)':'enfermedad', 'Sarna':'enfermedad',
+    'Zacate Johnson':'maleza', 'Coquillo (coyolillo)':'maleza', 'Correhuela':'maleza',
+    'Zacate pata de gallina':'maleza', 'Diente de león':'maleza', 'Quelite cenizo':'maleza',
+    'Campanilla (Ipomoea)':'maleza', 'Golondrina (lechosa)':'maleza', 'Malva':'maleza',
+    'Zacate Bermuda':'maleza', 'Toloache':'maleza', 'Rábano silvestre':'maleza',
+    'Cardo':'maleza', 'Trompillo':'maleza',
+    'Deficiencia de nitrógeno':'nutricion', 'Deficiencia de fósforo':'nutricion',
+    'Deficiencia de potasio':'nutricion', 'Deficiencia de calcio':'nutricion',
+    'Deficiencia de magnesio':'nutricion', 'Deficiencia de azufre':'nutricion',
+    'Deficiencia de hierro':'nutricion', 'Deficiencia de zinc':'nutricion',
+    'Deficiencia de boro':'nutricion', 'Deficiencia de manganeso':'nutricion',
+    'Deficiencia de cobre':'nutricion', 'Deficiencia de molibdeno':'nutricion',
+  };
+
+  var CATEGORY_BY_PROBLEM = Object.assign({
     'Plaga':'plaga', 'Mosca blanca':'plaga', 'Pulgón':'plaga', 'Araña roja':'plaga', 'Trips':'plaga',
     'Enfermedad':'enfermedad',
     'Maleza':'maleza',
     'Nutrición':'nutricion'
-  };
+  }, PROBLEM_CATEGORY_ADDITIONS);
 
   var PRODUCTS = [
     { mfg:'Bayer', domain:'bayer.com', name:'Sivanto Prime', type:'Insecticida', ingredient:'Flupyradifurona', presentation:'1 L', price:480, category:'plaga', crops:['Tomate','Fresa','Chile','Pepino','Lechuga'] },
@@ -1547,7 +1604,10 @@
 
   // `catalog` es opcional: si se pasa (y existe el botón #<prefix>-toggle), el
   // campo puede desplegar el catálogo completo además de los destacados.
-  function setupField(prefix, defaultValue, catalog){
+  // `catalogCatMap` (opcional) asigna data-cat a cada pill nuevo, para que
+  // conserve el color por categoría (usado en Problema). `noun` es la palabra
+  // que se muestra en el texto del botón y la nota ("cultivos"/"problemas").
+  function setupField(prefix, defaultValue, catalog, catalogCatMap, noun){
     var search = document.getElementById(prefix + '-search');
     var row = document.getElementById(prefix + '-pills');
     var pills = Array.prototype.slice.call(row.querySelectorAll('.pill'));
@@ -1582,6 +1642,7 @@
       el.className = 'pill';
       el.setAttribute('data-value', value);
       if(isExtra) el.setAttribute('data-extra', '1');
+      if(catalogCatMap && catalogCatMap[value]) el.setAttribute('data-cat', catalogCatMap[value]);
       if(value === current) el.classList.add('active');
       el.textContent = label;
       row.appendChild(el);
@@ -1627,10 +1688,10 @@
           catalog.forEach(function(name){ addPill(name, name, true); });
           catalogLoaded = true;
         }
-        toggle.textContent = expanded ? '← Ver solo destacados' : '··· Ver todos los cultivos';
+        toggle.textContent = expanded ? '← Ver solo destacados' : ('··· Ver todos los ' + noun);
         row.classList.toggle('expanded', expanded);
         if(catalogNote){
-          catalogNote.textContent = 'Catálogo completo (' + pills.length + ' cultivos) — usa el buscador de arriba para filtrar.';
+          catalogNote.textContent = 'Catálogo completo (' + pills.length + ' ' + noun + ') — usa el buscador de arriba para filtrar.';
           catalogNote.classList.toggle('show', expanded);
         }
         applyVisibility();
@@ -1640,8 +1701,8 @@
     return { get: function(){ return current || defaultValue; }, addPill: addPill };
   }
 
-  var crop = setupField('crop', 'Tomate', ALL_CROPS);
-  var problem = setupField('problem', 'Plaga');
+  var crop = setupField('crop', 'Tomate', ALL_CROPS, null, 'cultivos');
+  var problem = setupField('problem', 'Plaga', ALL_PROBLEMS, PROBLEM_CATEGORY_ADDITIONS, 'problemas');
   var cta = document.getElementById('search-cta');
 
   var CTA_CAT_COLOR = { plaga:'--cat-plaga', enfermedad:'--cat-enfermedad', maleza:'--cat-maleza', nutricion:'--cat-nutricion' };
