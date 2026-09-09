@@ -1318,6 +1318,12 @@
 
 <script>
 (function(){
+  // Quita acentos y pasa a minúsculas para que "maiz" encuentre "Maíz" y
+  // "arana" encuentre "Araña roja".
+  function normalizeText(text){
+    return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  }
+
   // Catálogo completo de cultivos, depurado de datos oficiales de SIAP (Servicio
   // de Información Agroalimentaria y Pesquera). Los 12 destacados de Baja
   // California siguen hardcodeados como pills en el HTML; esta lista es a la que
@@ -1585,11 +1591,11 @@
 
     // Visible = (destacado o catálogo desplegado) y coincide con la búsqueda.
     function applyVisibility(){
-      var q = search.value.trim().toLowerCase();
+      var q = normalizeText(search.value.trim());
       var anyVisible = false;
       pills.forEach(function(p){
         var inScope = expanded || p.getAttribute('data-extra') !== '1';
-        var match = q.length === 0 || p.getAttribute('data-value').toLowerCase().indexOf(q) !== -1;
+        var match = q.length === 0 || normalizeText(p.getAttribute('data-value')).indexOf(q) !== -1;
         var visible = inScope && match;
         p.classList.toggle('hidden', !visible);
         if(visible) anyVisible = true;
