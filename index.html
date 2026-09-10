@@ -1527,15 +1527,30 @@
     return '$' + n.toLocaleString('es-MX');
   }
 
+  // Fisher-Yates: baraja sin mutar el arreglo original. Se usa para que,
+  // dentro de cada nivel de prioridad, no siempre ganen los mismos
+  // fabricantes por venir primero en orden alfabético (ej. "Ácido..." de
+  // Servicios NH3 tapando para siempre a cualquier producto de un
+  // distribuidor nuevo).
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
   // Nunca mezcla categorías: primero coincidencia exacta de cultivo dentro
-  // de la categoría pedida, luego el resto de esa misma categoría.
+  // de la categoría pedida, luego el resto de esa misma categoría. Dentro
+  // de cada nivel, el orden es aleatorio en cada búsqueda.
   function matchProducts(cropValue, problemValue){
     var category = CATEGORY_BY_PROBLEM[problemValue] || null;
     var inCategory = category ? PRODUCTS.filter(function(p){ return p.category === category; }) : PRODUCTS.slice();
 
-    var cropSpecific = inCategory.filter(function(p){ return p.crops.indexOf(cropValue) !== -1; });
-    var cropAny = inCategory.filter(function(p){ return p.crops.indexOf('any') !== -1; });
-    var rest = inCategory.filter(function(p){ return p.crops.indexOf(cropValue) === -1 && p.crops.indexOf('any') === -1; });
+    var cropSpecific = shuffle(inCategory.filter(function(p){ return p.crops.indexOf(cropValue) !== -1; }));
+    var cropAny = shuffle(inCategory.filter(function(p){ return p.crops.indexOf('any') !== -1; }));
+    var rest = shuffle(inCategory.filter(function(p){ return p.crops.indexOf(cropValue) === -1 && p.crops.indexOf('any') === -1; }));
 
     var seen = {};
     var out = [];
