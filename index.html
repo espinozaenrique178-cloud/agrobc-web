@@ -495,62 +495,73 @@
 
   /* MANUFACTURERS */
   .mfg-grid{
-    display:grid;
-    grid-template-columns:repeat(3, 1fr);
+    display:flex;
+    flex-direction:column;
     gap:1px;
     background:var(--line);
     border:1px solid var(--line);
     border-radius:6px;
     overflow:hidden;
   }
+  .mfg-grid:empty{ display:none; border:none; }
   .mfg-card{
     background:var(--paper-raised);
-    padding:24px 24px 26px;
+    padding:20px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    border:none;
+    text-align:left;
+    font-family:inherit;
+    width:100%;
+    cursor:pointer;
   }
+  button.mfg-card:hover{ background:color-mix(in srgb, var(--paper-raised) 85%, var(--green-tint)); }
+  .mfg-card:not(button){ cursor:default; }
   .mfg-name{
     font-family:var(--font-display);
     font-weight:600;
-    font-size:1.15rem;
+    font-size:1.1rem;
     color:var(--green-deep);
   }
-  .mfg-meta{
-    font-size:0.8rem;
-    color:var(--stone);
-    margin-top:4px;
-  }
-  .mfg-products{
-    list-style:none;
-    margin:16px 0 0;
-    padding:0;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-  }
-  .mfg-products li{
-    font-size:0.9rem;
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    gap:10px;
-    border-top:1px solid var(--line);
-    padding-top:8px;
-  }
-  .mfg-products li span{
+  .mfg-chevron{ color:var(--stone); font-size:1.3rem; }
+
+  .mfg-section-label{
     font-family:var(--font-mono);
-    font-size:0.7rem;
-    color:var(--terra);
+    font-size:0.78rem;
+    letter-spacing:0.06em;
     text-transform:uppercase;
-    letter-spacing:0.04em;
-    white-space:nowrap;
+    color:var(--stone);
+    font-weight:700;
+    margin:0 0 12px;
   }
-  .mfg-card-more{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    background:var(--green-tint);
+
+  .mfg-back{
+    background:none; border:none; cursor:pointer; font-family:inherit;
+    color:var(--green); font-weight:600; font-size:0.95rem; padding:0; margin-bottom:16px;
   }
-  .mfg-card-more .mfg-name{color:var(--green-deep); font-size:1.05rem;}
-  .mfg-card-more .mfg-meta{color:var(--green-deep); opacity:0.75; margin-top:8px; line-height:1.5;}
+
+  .mfg-product-card{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-top:3px solid var(--green);
+    border-radius:8px;
+    padding:16px 18px;
+    margin-bottom:12px;
+  }
+  .mfg-product-type{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--green);
+    font-weight:700;
+  }
+  .mfg-product-name{ font-size:1.05rem; font-weight:700; color:var(--ink); margin-top:4px; }
+  .mfg-product-meta{ font-size:0.85rem; color:var(--ink-soft); margin-top:4px; }
+  .mfg-product-link{ display:inline-block; margin-top:10px; font-size:0.85rem; color:var(--green); font-weight:600; text-decoration:none; }
+  .mfg-empty{ color:var(--stone); font-size:0.9rem; padding:8px 0 20px; }
 
   @media (max-width:820px){
     .mfg-grid{grid-template-columns:1fr;}
@@ -911,113 +922,27 @@
 
 <section id="fabricantes">
   <div class="wrap">
-    <div class="section-head">
-      <span class="eyebrow">Quiénes estarían en el catálogo</span>
-      <h2 style="margin-top:10px;">Fabricantes que operan en la región</h2>
-      <p>AgroBC reuniría el catálogo de los fabricantes agroquímicos y de nutrición vegetal que ya venden en Baja California — grandes multinacionales y también marcas regionales. Cada fabricante podría eventualmente tener su propia cuenta para mantener su catálogo actualizado.</p>
+    <div id="fabricantes-list">
+      <div class="section-head">
+        <span class="eyebrow">Catálogo integrado</span>
+        <h2 style="margin-top:10px;">Fabricantes y distribuidores</h2>
+        <p>Toca un fabricante para ver sus productos cargados en AgroBC.</p>
+      </div>
+
+      <h3 class="mfg-section-label">Fabricantes (<span id="fab-count">0</span>)</h3>
+      <div class="mfg-grid" id="fab-grid"></div>
+
+      <h3 class="mfg-section-label" style="margin-top:28px;">Distribuidores (<span id="dist-count">0</span>)</h3>
+      <div class="mfg-grid" id="dist-grid"></div>
     </div>
 
-    <div class="mfg-grid">
-      <div class="mfg-card">
-        <div class="mfg-name">Bayer</div>
-        <div class="mfg-meta">Insecticidas · Fungicidas · Semillas</div>
-        <ul class="mfg-products">
-          <li>Sivanto Prime <span>insecticida</span></li>
-          <li>Confidor <span>insecticida</span></li>
-          <li>Decis <span>insecticida</span></li>
-          <li>Movento <span>insecticida</span></li>
-          <li>Fitoraz <span>fungicida</span></li>
-          <li>Aliette <span>fungicida</span></li>
-        </ul>
-      </div>
-      <div class="mfg-card">
-        <div class="mfg-name">Syngenta</div>
-        <div class="mfg-meta">Insecticidas · Fungicidas · Herbicidas</div>
-        <ul class="mfg-products">
-          <li>Actara <span>insecticida</span></li>
-          <li>Amistar <span>fungicida</span></li>
-          <li>Gramoxone <span>herbicida</span></li>
-          <li>Engeo <span>insecticida</span></li>
-        </ul>
-      </div>
-      <div class="mfg-card">
-        <div class="mfg-name">Corteva</div>
-        <div class="mfg-meta">Herbicidas · Insecticidas · Semillas</div>
-        <ul class="mfg-products">
-          <li>Tordon <span>herbicida</span></li>
-          <li>Coragen <span>insecticida</span></li>
-          <li>Lannate <span>insecticida</span></li>
-        </ul>
-      </div>
-      <div class="mfg-card">
-        <div class="mfg-name">UPL</div>
-        <div class="mfg-meta">Insecticidas · Fungicidas</div>
-        <ul class="mfg-products">
-          <li>Lancer Gold <span>insecticida</span></li>
-          <li>Manzate <span>fungicida</span></li>
-        </ul>
-      </div>
-      <div class="mfg-card">
-        <div class="mfg-name">BASF</div>
-        <div class="mfg-meta">Fungicidas · Bioestimulantes</div>
-        <ul class="mfg-products">
-          <li>Cabrio <span>fungicida</span></li>
-          <li>Priori Xtra <span>fungicida</span></li>
-        </ul>
-      </div>
-      <div class="mfg-card">
-        <div class="mfg-name">Yara</div>
-        <div class="mfg-meta">Nutrición vegetal</div>
-        <ul class="mfg-products">
-          <li>YaraVita <span>bioestimulante</span></li>
-          <li>YaraMila <span>fertilizante</span></li>
-        </ul>
-      </div>
-      <div class="mfg-card">
-        <div class="mfg-name">Haifa</div>
-        <div class="mfg-meta">Nutrición vegetal</div>
-        <ul class="mfg-products">
-          <li>Multi-K <span>fertilizante</span></li>
-          <li>Haifa Cal <span>fertilizante</span></li>
-        </ul>
-      </div>
-      <div class="mfg-card">
-        <div class="mfg-name">Mosaic</div>
-        <div class="mfg-meta">Nutrición vegetal</div>
-        <ul class="mfg-products">
-          <li>MicroEssentials <span>fertilizante</span></li>
-          <li>Aspire <span>fertilizante</span></li>
-        </ul>
-      </div>
-      <div class="mfg-card">
-        <div class="mfg-name">Nutrien Ag Solutions</div>
-        <div class="mfg-meta">Nutrición vegetal</div>
-        <ul class="mfg-products">
-          <li>ESN <span>fertilizante</span></li>
-          <li>Suståin <span>fertilizante</span></li>
-        </ul>
-      </div>
-      <div class="mfg-card">
-        <div class="mfg-name">Compo Expert</div>
-        <div class="mfg-meta">Nutrición vegetal</div>
-        <ul class="mfg-products">
-          <li>Basfoliar <span>bioestimulante</span></li>
-          <li>Novatec <span>fertilizante</span></li>
-        </ul>
-      </div>
-      <div class="mfg-card">
-        <div class="mfg-name">Van Iperen</div>
-        <div class="mfg-meta">Nutrición vegetal</div>
-        <ul class="mfg-products">
-          <li>Kristalon <span>fertilizante</span></li>
-        </ul>
-      </div>
-      <div class="mfg-card mfg-card-more">
-        <div class="mfg-name">+ marcas regionales</div>
-        <div class="mfg-meta">Distribuidores y fabricantes locales de Baja California, sumándose conforme avance el piloto.</div>
-      </div>
+    <div id="fabricante-detail" class="hidden">
+      <button type="button" class="mfg-back" id="mfg-back">‹ Fabricantes</button>
+      <span class="eyebrow">Fabricante</span>
+      <h2 style="margin-top:6px;" id="fab-detail-name"></h2>
+      <p id="fab-detail-count" style="color:var(--stone); font-size:0.9rem; margin-bottom:20px;"></p>
+      <div id="fab-products"></div>
     </div>
-    <div class="compare-foot"><span class="pin" style="color:var(--terra); font-family:var(--font-mono);">◍</span> Nombres de fabricantes y productos con fines ilustrativos para esta demostración; no representan un catálogo verificado ni una asociación actual con AgroBC.</div>
   </div>
 </section>
 
@@ -1496,6 +1421,79 @@
     });
   }
 
+  // ==================== FABRICANTES / DISTRIBUIDORES ====================
+  var FAB_CATEGORY_LABEL = { plaga:'Plaga', enfermedad:'Enfermedad', maleza:'Maleza', nutricion:'Nutrición' };
+  function loadFabricantesSection(){
+    if(!supabaseClient) return Promise.resolve();
+    var fabGrid = document.getElementById('fab-grid');
+    var distGrid = document.getElementById('dist-grid');
+    var fabCount = document.getElementById('fab-count');
+    var distCount = document.getElementById('dist-count');
+    var listView = document.getElementById('fabricantes-list');
+    var detailView = document.getElementById('fabricante-detail');
+    var detailName = document.getElementById('fab-detail-name');
+    var detailCount = document.getElementById('fab-detail-count');
+    var productsBox = document.getElementById('fab-products');
+    var backBtn = document.getElementById('mfg-back');
+
+    function showFabricante(fabricante){
+      listView.classList.add('hidden');
+      detailView.classList.remove('hidden');
+      detailName.textContent = fabricante.name;
+      detailCount.textContent = 'Cargando…';
+      productsBox.innerHTML = '';
+      supabaseClient.from('productos').select('*').eq('fabricante_id', fabricante.id).order('name').then(function(res){
+        var rows = (res.data || []);
+        detailCount.textContent = rows.length + ' producto' + (rows.length === 1 ? '' : 's') + ' en AgroBC';
+        if(rows.length === 0){
+          productsBox.innerHTML = '<p class="mfg-empty">Todavía no hay productos de ' + escapeHtml(fabricante.name) + ' cargados en el catálogo.</p>';
+          return;
+        }
+        productsBox.innerHTML = rows.map(function(p){
+          var ficha = p.ficha_tecnica
+            ? '<a class="mfg-product-link" href="' + escapeHtml(p.ficha_tecnica) + '" target="_blank" rel="noopener noreferrer">Ver ficha técnica ↗</a>'
+            : '';
+          return '' +
+            '<div class="mfg-product-card">' +
+              '<div class="mfg-product-type">' + escapeHtml(FAB_CATEGORY_LABEL[p.category] || p.type || '') + '</div>' +
+              '<div class="mfg-product-name">' + escapeHtml(p.name) + '</div>' +
+              (p.ingredient ? '<div class="mfg-product-meta">' + escapeHtml(p.ingredient) + '</div>' : '') +
+              (p.presentation ? '<div class="mfg-product-meta">' + escapeHtml(p.presentation) + '</div>' : '') +
+              ficha +
+            '</div>';
+        }).join('');
+      });
+    }
+
+    backBtn.addEventListener('click', function(){
+      detailView.classList.add('hidden');
+      listView.classList.remove('hidden');
+    });
+
+    return Promise.all([
+      supabaseClient.from('fabricantes').select('*').order('name'),
+      supabaseClient.from('distribuidores').select('*').order('name'),
+    ]).then(function(results){
+      var fabricantes = results[0].data || [];
+      var distribuidores = results[1].data || [];
+
+      fabCount.textContent = fabricantes.length;
+      fabGrid.innerHTML = fabricantes.map(function(f, i){
+        return '<button type="button" class="mfg-card" data-idx="' + i + '"><span class="mfg-name">' + escapeHtml(f.name) + '</span><span class="mfg-chevron">›</span></button>';
+      }).join('');
+      Array.from(fabGrid.querySelectorAll('.mfg-card')).forEach(function(btn){
+        btn.addEventListener('click', function(){
+          showFabricante(fabricantes[Number(btn.getAttribute('data-idx'))]);
+        });
+      });
+
+      distCount.textContent = distribuidores.length;
+      distGrid.innerHTML = distribuidores.map(function(d){
+        return '<div class="mfg-card"><span class="mfg-name">' + escapeHtml(d.name) + '</span></div>';
+      }).join('');
+    });
+  }
+
   function loadSiteContent(){
     if(!supabaseClient) return Promise.resolve();
     return supabaseClient.from('site_content').select('*').then(function(res){
@@ -1738,6 +1736,7 @@
   loadCatalogFromSupabase();
   loadCropsFromSupabase();
   loadSiteContent();
+  loadFabricantesSection();
 
   // ==================== CALCULADORA ====================
   (function(){
