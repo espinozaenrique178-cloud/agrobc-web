@@ -301,6 +301,32 @@
     margin:8px 0 0;
   }
   .empty-note.show{display:block;}
+  #product-results{display:flex; flex-direction:column; gap:10px;}
+  .product-search-card{
+    display:block;
+    border:1px solid var(--line);
+    border-left:4px solid var(--green);
+    border-radius:6px;
+    padding:10px 12px;
+    background:var(--paper);
+    cursor:pointer;
+    transition:transform 0.08s ease, border-color 0.12s ease;
+  }
+  .product-search-card:hover{ transform:translateY(-1px); }
+  .product-search-card:focus-visible{ outline:2px solid var(--green); outline-offset:1px; }
+  .product-search-card[data-cat="plaga"]{ border-left-color:var(--cat-plaga); }
+  .product-search-card[data-cat="enfermedad"]{ border-left-color:var(--cat-enfermedad); }
+  .product-search-card[data-cat="maleza"]{ border-left-color:var(--cat-maleza); }
+  .product-search-card[data-cat="nutricion"]{ border-left-color:var(--cat-nutricion); }
+  .product-search-mfg{ font-size:0.72rem; font-weight:700; color:var(--stone); text-transform:uppercase; letter-spacing:0.5px; }
+  .product-search-name{ font-size:0.95rem; font-weight:700; color:var(--ink); margin-top:2px; }
+  .product-search-meta{ font-size:0.8rem; color:var(--ink-soft); margin-top:4px; }
+  .product-search-distrib{ display:none; font-size:0.82rem; }
+  .product-search-card.open .product-search-distrib{
+    display:block; margin-top:10px; padding-top:8px; border-top:1px solid var(--line);
+  }
+  .product-search-distrib-label{ font-size:0.75rem; font-weight:700; color:var(--stone); margin-bottom:3px; }
+  .product-search-distrib-name{ color:var(--ink); margin-top:2px; }
   .search-card .go{
     margin-top:20px;
     width:100%;
@@ -796,7 +822,13 @@
       <div class="search-card">
         <span class="eyebrow">¿Qué necesitas consultar?</span>
 
-        <div class="field-label">Cultivo</div>
+        <div class="field-label">¿Ya sabes qué producto buscas?</div>
+        <div class="field-search">
+          <input type="text" id="product-search" placeholder="Buscar por nombre… (ej. Yara Mila 15-15-15)" autocomplete="off">
+        </div>
+        <div id="product-results"></div>
+
+        <div class="field-label" style="margin-top:18px;">Cultivo</div>
         <div class="field-search">
           <input type="text" id="crop-search" placeholder="Buscar cultivo… (ej. espárrago)" autocomplete="off">
         </div>
@@ -1395,6 +1427,7 @@
       if(res.error || !res.data || res.data.length === 0) return;
       PRODUCTS = res.data.map(function(row){
         return {
+          id: row.id,
           mfg: row.mfg || '',
           domain: '',
           fichaUrl: row.ficha_tecnica || '',
@@ -1615,6 +1648,79 @@
     });
   }
 
+  var PRODUCT_SEARCH_CATEGORY_LABEL = { plaga:'Plaga', enfermedad:'Enfermedad', maleza:'Maleza', nutricion:'Nutrición' };
+
+  function setupProductSearch(){
+    var input = document.getElementById('product-search');
+    var results = document.getElementById('product-results');
+    if(!input || !results) return;
+
+    input.addEventListener('input', function(){
+      var q = normalizeText(input.value.trim());
+      results.innerHTML = '';
+      if(!q) return;
+
+      var matches = PRODUCTS.filter(function(p){
+        return normalizeText(p.name).indexOf(q) !== -1 || normalizeText(p.ingredient || '').indexOf(q) !== -1;
+      }).slice(0, 20);
+
+      if(matches.length === 0){
+        var empty = document.createElement('p');
+        empty.className = 'empty-note';
+        empty.style.display = 'block';
+        empty.textContent = 'Sin coincidencias para "' + input.value.trim() + '".';
+        results.appendChild(empty);
+        return;
+      }
+
+      matches.forEach(function(p){
+        var card = document.createElement('div');
+        card.className = 'product-search-card';
+        card.setAttribute('data-cat', p.category);
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        var metaBits = [PRODUCT_SEARCH_CATEGORY_LABEL[p.category] || p.category];
+        if(p.ingredient) metaBits.push(p.ingredient);
+        if(p.presentation) metaBits.push(p.presentation);
+        card.innerHTML =
+          '<div class="product-search-mfg">' + escapeHtml(p.mfg) + '</div>' +
+          '<div class="product-search-name">' + escapeHtml(p.name) + '</div>' +
+          '<div class="product-search-meta">' + escapeHtml(metaBits.join(' · ')) + '</div>' +
+          '<div class="product-search-distrib"></div>';
+
+        var distribBox = card.querySelector('.product-search-distrib');
+        var loaded = false;
+
+        function toggle(){
+          var open = card.classList.toggle('open');
+          if(open && !loaded){
+            loaded = true;
+            distribBox.textContent = 'Cargando…';
+            if(!p.id || !supabaseClient){
+              distribBox.textContent = 'Aún no hay distribuidor registrado para este producto.';
+              return;
+            }
+            supabaseClient.from('producto_distribuidores').select('distribuidores(name)').eq('producto_id', p.id).then(function(res){
+              var names = (res.data || []).map(function(row){ return row.distribuidores && row.distribuidores.name; }).filter(Boolean);
+              if(names.length === 0){
+                distribBox.textContent = 'Aún no hay distribuidor registrado para este producto.';
+                return;
+              }
+              distribBox.innerHTML = '<div class="product-search-distrib-label">Disponible con:</div>' +
+                names.map(function(n){ return '<div class="product-search-distrib-name">◍ ' + escapeHtml(n) + '</div>'; }).join('');
+            });
+          }
+        }
+
+        card.addEventListener('click', toggle);
+        card.addEventListener('keydown', function(e){
+          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
+        });
+        results.appendChild(card);
+      });
+    });
+  }
+
   // `catalog` es opcional: si se pasa (y existe el botón #<prefix>-toggle), el
   // campo puede desplegar el catálogo completo además de los destacados.
   // `catalogCatMap` (opcional) asigna data-cat a cada pill nuevo, para que
@@ -1714,6 +1820,7 @@
     return { get: function(){ return current || defaultValue; }, addPill: addPill };
   }
 
+  setupProductSearch();
   var crop = setupField('crop', 'Tomate', ALL_CROPS, null, 'cultivos');
   var problem = setupField('problem', 'Plaga', ALL_PROBLEMS, PROBLEM_CATEGORY_ADDITIONS, 'problemas');
   var cta = document.getElementById('search-cta');
