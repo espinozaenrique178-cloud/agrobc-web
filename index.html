@@ -1438,6 +1438,13 @@
           price: Number(row.price) || 0,
           category: row.category,
           crops: (row.crops && row.crops.length) ? row.crops : ['any'],
+          nPct: row.n_pct || '',
+          pPct: row.p_pct || '',
+          kPct: row.k_pct || '',
+          sPct: row.s_pct || '',
+          caPct: row.ca_pct || '',
+          mgPct: row.mg_pct || '',
+          otrosMicro: row.otros_micronutrientes || '',
         };
       });
       renderResults(crop.get(), problem.get());
@@ -1572,12 +1579,56 @@
     return a;
   }
 
+  // Cada valor es texto libre ("22% K2O (18.26% K)", "0%", null…), así que
+  // solo se usa el primer número como señal de "sí aporta este nutriente".
+  function parsePct(str){
+    if(!str) return 0;
+    var m = String(str).match(/([\d.]+)/);
+    return m ? parseFloat(m[1]) : 0;
+  }
+
+  var MACRO_FIELD = { n:'nPct', p:'pPct', k:'kPct', s:'sPct', ca:'caPct', mg:'mgPct' };
+
+  // Los micronutrientes no siempre tienen columna propia — se identifican
+  // por el nombre del producto (ej. "Zinc (Wolf Trax DDP)") o por el
+  // símbolo en otros_micronutrientes (ej. "10% B" en un producto de
+  // Calcio+Boro).
+  var MICRO_NAME_KEYWORDS = {
+    fe:['fierro','hierro'], zn:['zinc'], b:['boro'], mn:['manganeso'], cu:['cobre'], mo:['molibdeno'],
+  };
+  var MICRO_SYMBOL_REGEX = {
+    fe:/\bFe\b/, zn:/\bZn\b/, b:/\bB\b/, mn:/\bMn\b/, cu:/\bCu\b/, mo:/\bMo\b/,
+  };
+
+  // Une cada deficiencia específica al nutriente que realmente la corrige,
+  // para que "Deficiencia de calcio" no recomiende un fertilizante de N-S
+  // como el Sulfato de Amonio solo por estar en la categoría "nutrición".
+  var DEFICIENCY_NUTRIENT_KEY = {
+    'Deficiencia de nitrógeno':'n', 'Deficiencia de fósforo':'p', 'Deficiencia de potasio':'k',
+    'Deficiencia de azufre':'s', 'Deficiencia de calcio':'ca', 'Deficiencia de magnesio':'mg',
+    'Deficiencia de hierro':'fe', 'Deficiencia de zinc':'zn', 'Deficiencia de boro':'b',
+    'Deficiencia de manganeso':'mn', 'Deficiencia de cobre':'cu', 'Deficiencia de molibdeno':'mo',
+  };
+
+  function productHasNutrient(p, key){
+    if(MACRO_FIELD[key]) return parsePct(p[MACRO_FIELD[key]]) > 0;
+    var nameLower = (p.name || '').toLowerCase();
+    if(MICRO_NAME_KEYWORDS[key].some(function(kw){ return nameLower.indexOf(kw) !== -1; })) return true;
+    if(p.otrosMicro && MICRO_SYMBOL_REGEX[key].test(p.otrosMicro)) return true;
+    return false;
+  }
+
   // Nunca mezcla categorías: primero coincidencia exacta de cultivo dentro
   // de la categoría pedida, luego el resto de esa misma categoría. Dentro
   // de cada nivel, el orden es aleatorio en cada búsqueda.
   function matchProducts(cropValue, problemValue){
     var category = CATEGORY_BY_PROBLEM[problemValue] || null;
     var inCategory = category ? PRODUCTS.filter(function(p){ return p.category === category; }) : PRODUCTS.slice();
+
+    var deficiencyKey = DEFICIENCY_NUTRIENT_KEY[problemValue];
+    if(deficiencyKey){
+      inCategory = inCategory.filter(function(p){ return productHasNutrient(p, deficiencyKey); });
+    }
 
     var cropSpecific = shuffle(inCategory.filter(function(p){ return p.crops.indexOf(cropValue) !== -1; }));
     var cropAny = shuffle(inCategory.filter(function(p){ return p.crops.indexOf('any') !== -1; }));
