@@ -449,6 +449,17 @@
     width:100%;
     justify-content:space-between;
   }
+  .result-buy[disabled]{ cursor:default; }
+  .result-distrib{
+    margin-top:12px;
+    padding-top:10px;
+    border-top:1px solid var(--line);
+    font-size:0.82rem;
+  }
+  .result-distrib-label{ font-size:0.75rem; font-weight:700; color:var(--stone); margin-bottom:3px; }
+  .result-distrib-name{ color:var(--ink); margin-top:2px; }
+  .result-distrib-location{ font-size:0.75rem; color:var(--stone); margin-top:1px; }
+  .result-distrib-empty{ color:var(--stone); font-style:italic; }
   .empty-results{
     grid-column:1 / -1;
     padding:36px 24px;
@@ -1386,33 +1397,10 @@
     'Nutrición':'nutricion'
   }, PROBLEM_CATEGORY_ADDITIONS);
 
-  var PRODUCTS = [
-    { mfg:'Bayer', domain:'bayer.com', name:'Sivanto Prime', type:'Insecticida', ingredient:'Flupyradifurona', presentation:'1 L', price:480, category:'plaga', crops:['Tomate','Fresa','Chile','Pepino','Lechuga'] },
-    { mfg:'Bayer', domain:'bayer.com', name:'Confidor', type:'Insecticida', ingredient:'Imidacloprid', presentation:'1 L', price:410, category:'plaga', crops:['Tomate','Cebolla','Brócoli'] },
-    { mfg:'Bayer', domain:'bayer.com', name:'Decis', type:'Insecticida', ingredient:'Deltametrina', presentation:'500 ml', price:365, category:'plaga', crops:['Fresa','Chile','Lechuga'] },
-    { mfg:'Bayer', domain:'bayer.com', name:'Movento', type:'Insecticida', ingredient:'Espirotetramat', presentation:'1 L', price:590, category:'plaga', crops:['Vid','Aguacate'] },
-    { mfg:'Bayer', domain:'bayer.com', name:'Fitoraz', type:'Fungicida', ingredient:'Propineb + Cimoxanilo', presentation:'1 kg', price:445, category:'enfermedad', crops:['Tomate','Vid','Aguacate'] },
-    { mfg:'Bayer', domain:'bayer.com', name:'Aliette', type:'Fungicida', ingredient:'Fosetil-Al', presentation:'1 kg', price:520, category:'enfermedad', crops:['Vid','Aguacate','Fresa'] },
-
-    { mfg:'Syngenta', domain:'syngenta.com', name:'Actara', type:'Insecticida', ingredient:'Tiametoxam', presentation:'1 kg', price:520, category:'plaga', crops:['Tomate','Chile','Lechuga','Brócoli'] },
-    { mfg:'Syngenta', domain:'syngenta.com', name:'Engeo', type:'Insecticida', ingredient:'Tiametoxam + Lambdacihalotrina', presentation:'1 L', price:610, category:'plaga', crops:['Fresa','Pepino','Chile'] },
-    { mfg:'Syngenta', domain:'syngenta.com', name:'Amistar', type:'Fungicida', ingredient:'Azoxistrobina', presentation:'1 L', price:680, category:'enfermedad', crops:['Tomate','Vid','Fresa'] },
-    { mfg:'Syngenta', domain:'syngenta.com', name:'Gramoxone', type:'Herbicida', ingredient:'Paraquat', presentation:'5 L', price:390, category:'maleza', crops:['any'] },
-
-    { mfg:'Corteva', domain:'corteva.com', name:'Coragen', type:'Insecticida', ingredient:'Clorantraniliprol', presentation:'1 L', price:730, category:'plaga', crops:['Tomate','Chile','Lechuga','Brócoli'] },
-    { mfg:'Corteva', domain:'corteva.com', name:'Lannate', type:'Insecticida', ingredient:'Metomilo', presentation:'1 L', price:340, category:'plaga', crops:['Tomate','Fresa','Pepino'] },
-    { mfg:'Corteva', domain:'corteva.com', name:'Tordon', type:'Herbicida', ingredient:'Picloram', presentation:'1 L', price:455, category:'maleza', crops:['Trigo','Alfalfa'] },
-
-    { mfg:'UPL', domain:'upl-ltd.com', name:'Lancer Gold', type:'Insecticida', ingredient:'Acetamiprid', presentation:'500 g', price:295, category:'plaga', crops:['Tomate','Chile'] },
-    { mfg:'UPL', domain:'upl-ltd.com', name:'Manzate', type:'Fungicida', ingredient:'Mancozeb', presentation:'1 kg', price:260, category:'enfermedad', crops:['Tomate','Fresa','Vid','Cebolla'] },
-
-    { mfg:'BASF', domain:'agriculture.basf.com', name:'Cabrio', type:'Fungicida', ingredient:'Piraclostrobina', presentation:'1 L', price:715, category:'enfermedad', crops:['Vid','Fresa','Aguacate'] },
-    { mfg:'BASF', domain:'agriculture.basf.com', name:'Priori Xtra', type:'Fungicida', ingredient:'Azoxistrobina + Ciproconazol', presentation:'1 L', price:750, category:'enfermedad', crops:['Tomate','Cebolla','Lechuga'] },
-    { mfg:'BASF', domain:'agriculture.basf.com', name:'Basta', type:'Herbicida', ingredient:'Glufosinato de amonio', presentation:'1 L', price:470, category:'maleza', crops:['any'] },
-
-    // Los fertilizantes (categoría 'nutricion') ya no van fijos aquí — se cargan
-    // en vivo desde Supabase (tabla `fertilizantes`), administrados desde /admin.html.
-  ];
+  // Vacío: ya existe catálogo real (con distribuidor vinculado) en Supabase
+  // para insecticidas, herbicidas y fungicidas, así que no hace falta mostrar
+  // productos de muestra sin distribuidor mientras carga o si falla Supabase.
+  var PRODUCTS = [];
 
   var supabaseClient = (window.supabase && window.AGROBC_SUPABASE)
     ? window.supabase.createClient(window.AGROBC_SUPABASE.url, window.AGROBC_SUPABASE.key)
@@ -1672,6 +1660,8 @@
       return;
     }
 
+    var CAT_COLOR = { plaga:'--cat-plaga', enfermedad:'--cat-enfermedad', maleza:'--cat-maleza', nutricion:'--cat-nutricion' };
+
     matches.forEach(function(p, i){
       var card = document.createElement('div');
       card.className = 'result-card';
@@ -1686,24 +1676,39 @@
           ingredientRow +
           '<li><span>Presentación</span><span>' + escapeHtml(p.presentation) + '</span></li>' +
           '<li><span>Cultivo</span><span>' + escapeHtml(cropValue) + '</span></li>' +
-        '</ul>';
+        '</ul>' +
+        '<div class="result-distrib">Cargando…</div>';
 
-      var CAT_COLOR = { plaga:'--cat-plaga', enfermedad:'--cat-enfermedad', maleza:'--cat-maleza', nutricion:'--cat-nutricion' };
-      var buyBtn = document.createElement('a');
+      var buyBtn = document.createElement('button');
+      buyBtn.type = 'button';
       buyBtn.className = 'btn btn-primary result-buy';
       buyBtn.style.background = 'var(' + (CAT_COLOR[p.category] || '--green') + ')';
-      if(p.fichaUrl){
-        buyBtn.href = p.fichaUrl;
-      } else {
-        var query = 'site:' + p.domain + ' "' + p.name + '" ficha técnica';
-        buyBtn.href = 'https://www.google.com/search?q=' + encodeURIComponent(query);
-      }
-      buyBtn.target = '_blank';
-      buyBtn.rel = 'noopener noreferrer';
-      buyBtn.innerHTML = 'Ficha técnica en ' + p.mfg + ' <span aria-hidden="true">↗</span>';
+      buyBtn.textContent = 'Contacto directo';
       card.appendChild(buyBtn);
 
       grid.appendChild(card);
+
+      var distribBox = card.querySelector('.result-distrib');
+      if(!p.id || !supabaseClient){
+        distribBox.className = 'result-distrib result-distrib-empty';
+        distribBox.textContent = 'Aún no hay distribuidor registrado para este producto.';
+        return;
+      }
+      supabaseClient.from('producto_distribuidores').select('distribuidores(name)').eq('producto_id', p.id).then(function(res){
+        var names = (res.data || []).map(function(row){ return row.distribuidores && row.distribuidores.name; }).filter(Boolean);
+        if(names.length === 0){
+          distribBox.className = 'result-distrib result-distrib-empty';
+          distribBox.textContent = 'Aún no hay distribuidor registrado para este producto.';
+          return;
+        }
+        distribBox.innerHTML = '<div class="result-distrib-label">Disponible con:</div>' +
+          names.map(function(n){
+            return '<div>' +
+              '<div class="result-distrib-name">◍ ' + escapeHtml(n) + '</div>' +
+              '<div class="result-distrib-location">Mexicali, B.C.</div>' +
+            '</div>';
+          }).join('');
+      });
     });
   }
 
