@@ -473,6 +473,23 @@
     .result-grid{grid-template-columns:1fr;}
   }
 
+  /* Los resultados son una vista aparte (como en la app), no una sección más
+     de la landing: al buscar se oculta todo lo demás y queda solo esto. */
+  #resultados{display:none;}
+  body.results-mode > *:not(#resultados){display:none;}
+  body.results-mode #resultados{display:block; min-height:100vh; padding-top:26px;}
+  .results-topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:26px;
+  }
+  .results-back{padding:9px 16px; font-size:0.9rem;}
+
   /* COMPARATOR */
   .compare-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--paper-raised);}
   table.compare{
@@ -887,10 +904,14 @@
 
 <section id="resultados">
   <div class="wrap">
+    <div class="results-topbar">
+      <div class="logo">AgroBC<span class="dot">.</span></div>
+      <button type="button" class="btn btn-ghost results-back" id="results-back">‹ Nueva búsqueda</button>
+    </div>
     <div class="section-head">
       <span class="eyebrow">Resultado de búsqueda</span>
       <h2 style="margin-top:10px;" id="results-title">Tomate + Plaga</h2>
-      <p>AgroBC muestra las opciones disponibles que cumplen tu búsqueda, siempre de la misma categoría que pediste. Ningún fabricante paga por aparecer primero — al elegir un producto vas directo a su ficha técnica en el sitio del fabricante.</p>
+      <p>AgroBC muestra las opciones disponibles que cumplen tu búsqueda, siempre de la misma categoría que pediste. Ningún fabricante paga por aparecer primero, y cada opción indica con qué distribuidor está disponible.</p>
       <div class="cat-legend">
         <span class="cat-chip" style="--chip:var(--cat-plaga);">Insecticida</span>
         <span class="cat-chip" style="--chip:var(--cat-enfermedad);">Fungicida</span>
@@ -1435,7 +1456,11 @@
           otrosMicro: row.otros_micronutrientes || '',
         };
       });
-      renderResults(crop.get(), problem.get());
+      // Solo re-dibuja si el usuario ya está viendo resultados; si sigue en la
+      // búsqueda, se dibujarán con el catálogo ya cargado al darle Buscar.
+      if(document.body.classList.contains('results-mode')){
+        renderResults(crop.get(), problem.get());
+      }
     });
   }
 
@@ -1897,13 +1922,44 @@
   }
   updateCta();
 
+  // La vista de resultados reemplaza a la landing (mismo comportamiento que
+  // la app: buscar lleva a una pantalla aparte con "‹ Nueva búsqueda").
+  function openResults(push){
+    document.body.classList.add('results-mode');
+    window.scrollTo(0, 0);
+    if(push && window.history && history.pushState){
+      history.pushState({ view:'resultados' }, '', '#resultados');
+    }
+  }
+  function closeResults(){
+    document.body.classList.remove('results-mode');
+    window.scrollTo(0, 0);
+  }
+
   cta.addEventListener('click', function(){
     renderResults(crop.get(), problem.get());
     logSearch(crop.get(), problem.get());
-    document.getElementById('resultados').scrollIntoView({ behavior:'smooth', block:'start' });
+    openResults(true);
   });
 
-  renderResults(crop.get(), problem.get());
+  document.getElementById('results-back').addEventListener('click', function(){
+    if(window.history && history.state && history.state.view === 'resultados'){
+      history.back();
+    } else {
+      closeResults();
+    }
+  });
+
+  window.addEventListener('popstate', function(e){
+    if(e.state && e.state.view === 'resultados'){ openResults(false); }
+    else { closeResults(); }
+  });
+
+  // Si alguien llega o recarga con #resultados, se queda en la búsqueda:
+  // no hay un estado de resultados que restaurar todavía.
+  if(location.hash === '#resultados' && history.replaceState){
+    history.replaceState(null, '', location.pathname + location.search);
+  }
   loadCatalogFromSupabase();
   loadCropsFromSupabase();
   loadSiteContent();
