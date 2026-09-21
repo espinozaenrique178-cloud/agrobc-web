@@ -1359,6 +1359,1041 @@
   // Catálogo completo de problemas: selección curada de plagas, enfermedades,
   // malezas y deficiencias nutricionales comunes en cultivos de México. No
   // existe una fuente oficial única (como SIAP para cultivos) para este caso.
+  // ===== Problemas curados por cultivo y categoria (fuente: UC IPM) =====
+  // Generado desde curacion-problemas-por-cultivo.md
+  var CROP_PROBLEMS = {
+    "Agave": {
+      plaga: ["Picudo del agave","Gusano blanco del agave","Gallina ciega"],
+      enfermedad: ["Pudrición de raíz","Fusarium (marchitez)","Mancha anular del agave"],
+      maleza: ["Acahual (gigantón)","Alpistillo","Campanilla (Ipomoea)","Cebadilla","Chayotillo","Cola de zorra","Falsa verdolaga","Golondrina (lechosa)","Quelite (bledo)","Raigrás","Rodilla de pollo","Sorgo voluntario","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate kikuyo","Zacate pata de gallina","Zacate piojillo","Zacate pitillo","Zacate triguillo"],
+    },
+    "Aguacate": {
+      plaga: ["Araña roja","Trips","Barrenador del hueso (aguacate)","Escama","Cochinilla","Mosca blanca","Gallina ciega","Chapulín","Ácaro persea","Enrollador del aguacate (amorbia)","Medidor omnívoro","Barrenador ambrosial (shothole borer)","Trips de invernadero","Caracol y babosa","Chinche de encaje del aguacate"],
+      enfermedad: ["Antracnosis","Pudrición de raíz","Cancro bacteriano","Verticilosis","Cancro y muerte de ramas","Pudrición de fruto por Phytophthora","Cancro del tronco por Phytophthora","Muerte descendente por Fusarium","Pudrición peduncular del fruto","Fumagina","Mancha de sol (sunblotch)","Raya negra del aguacate","Pudrición de raíz por Rosellinia"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Alfalfa": {
+      plaga: ["Pulgón","Araña roja","Trips","Chicharrita","Gusano soldado","Gusano trozador","Chapulín","Mosca blanca","Cochinilla","Picudo de la alfalfa","Gusano de la alfalfa","Pulgón azul de la alfalfa","Pulgón moteado de la alfalfa","Saltahojas de tres esquinas","Gusano telarañero","Escarabajo ampolla","Curculiónido de la raíz del trébol","Grillo mormón"],
+      enfermedad: ["Antracnosis","Mildiu velloso","Fusarium (marchitez)","Verticilosis","Pudrición de raíz","Damping-off (ahogamiento de plántula)","Marchitez bacteriana","Mancha foliar común","Tallo negro de primavera","Tallo negro de verano","Mancha foliar por Stemphylium","Esclerotinia (moho blanco)","Pudrición texana de la raíz","Virus del mosaico de la alfalfa","Enanismo de la alfalfa","Cancro radicular por Rhizoctonia"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Malva","Nabo silvestre","Pasto de conejo","Quelite (bledo)","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate azul","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate liendrilla","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Algodón hueso": {
+      plaga: ["Picudo del algodonero","Gusano rosado","Gusano del fruto","Gusano tabacalero","Gusano soldado","Falso medidor","Gusano trozador","Gusano peludo","Perforador de la hoja del algodón","Mosca blanca","Pulgón","Chinche lygus","Chinche apestosa","Falsa chinche","Chicharrita","Trips","Araña roja","Chapulín","Grillo","Gusano de alambre","Mosca de la semilla"],
+      enfermedad: ["Fusarium (marchitez)","Verticilosis","Damping-off (ahogamiento de plántula)"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Arroz palay": {
+      plaga: ["Gusano soldado","Chicharrita del aster","Minador del arroz","Picudo acuático del arroz","Mosquita de la semilla del arroz"],
+      enfermedad: ["Añublo del arroz (piricularia)","Pudrición del tallo del arroz","Mancha agregada de la vaina","Bakanae","Carbón del grano","Damping-off (ahogamiento de plántula)"],
+      maleza: ["Acahual (gigantón)","Aceitilla","Campanilla (Ipomoea)","Quelite (bledo)","Verdolaga (maleza)"],
+    },
+    "Arándano": {
+      plaga: ["Drosophila de alas manchadas","Trips","Gallina ciega","Palomilla del manzano","Araña roja"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Raigrás","Sorgo voluntario","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate kikuyo","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Avena": {
+      plaga: ["Pulgón","Gusano soldado","Chapulín","Gusano de alambre","Chinche apestosa","Araña roja","Pulgón ruso del trigo","Mosca del tallo del trigo","Chinche negra del zacate","Típula"],
+      enfermedad: ["Roya","Cenicilla (oídio)","Carbón","Pudrición de raíz","Tizones bacterianos","Mancha foliar por Septoria","Carbón parcial (Karnal bunt)","Punta negra","Enanismo amarillo de la cebada","Cornezuelo (ergot)","Mal del pie (take-all)","Escaldadura de la cebada"],
+      maleza: ["Acahual (gigantón)","Aceitilla","Campanilla (Ipomoea)","Malva","Pasto de conejo","Quelite (bledo)","Quelite cenizo","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate azul","Zacate ceboso","Zacate de agua","Zacate liendrilla"],
+    },
+    "Berenjena": {
+      plaga: ["Araña roja","Ácaro blanco","Mosca blanca","Pulgón","Trips","Minador de la hoja","Gusano del fruto","Gusano soldado","Falso medidor","Perforador del fruto de la berenjena","Nematodos"],
+      enfermedad: ["Verticilosis","Pudrición gris (Botritis)","Esclerotinia (moho blanco)","Tizón temprano","Pudrición de raíz","Marchitez manchada del tomate","Virus del mosaico","Virus del mosaico del tabaco"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Malva","Pasto de conejo","Quelite (bledo)","Quelite cenizo","Raigrás","Sorgo voluntario","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate azul","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate liendrilla","Zacate pata de gallina","Zacate pata de ganso","Zacate pitillo","Zacate triguillo"],
+    },
+    "Brócoli": {
+      plaga: ["Palomilla dorso de diamante","Falso medidor","Pulgón","Mosca blanca","Gusano soldado","Gusano trozador","Minador de la hoja","Gusano de alambre","Chinche lygus","Gusano de la col","Mosca de la raíz de la col","Pulga saltona","Chinche bagrada","Sinfílido"],
+      enfermedad: ["Mildiu velloso","Verticilosis","Pudrición de raíz","Mancha bacteriana","Mancha foliar por Alternaria","Pudrición negra","Pierna negra","Amarillamiento por Fusarium","Esclerotinia (moho blanco)","Rhizoctonia","Roya blanca","Hernia de la col (clubroot)","Mancha anillada"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Cacahuate": {
+      plaga: ["Gallina ciega","Gusano trozador","Chapulín","Diabrótica","Gusano peludo","Araña roja","Trips"],
+      enfermedad: ["Viruela temprana del cacahuate","Viruela tardía del cacahuate","Tizón sureño","Pudrición carbonosa"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Raigrás","Sorgo voluntario","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate kikuyo","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Calabacita": {
+      plaga: ["Mosca blanca","Pulgón","Trips","Araña roja","Minador de la hoja","Falso medidor","Gusano soldado","Gusano trozador","Diabrótica","Chapulín","Gusano de alambre","Chinche apestosa","Pulga saltona","Chinche de la calabaza","Chicharrita","Mosca de la semilla","Falsa chinche","Tijerilla"],
+      enfermedad: ["Cenicilla (oídio)","Mildiu velloso","Antracnosis","Fusarium (marchitez)","Verticilosis","Pudrición de raíz","Virus del mosaico","Mancha angular","Pudrición carbonosa","Marchitez súbita / decaimiento de vid","Punta rizada (curly top)","Mancha bacteriana del fruto"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Calabaza": {
+      plaga: ["Mosca blanca","Pulgón","Trips","Araña roja","Minador de la hoja","Falso medidor","Gusano soldado","Gusano trozador","Diabrótica","Chapulín","Gusano de alambre","Chinche apestosa","Pulga saltona","Chinche de la calabaza","Chicharrita","Mosca de la semilla","Falsa chinche","Tijerilla"],
+      enfermedad: ["Cenicilla (oídio)","Mildiu velloso","Antracnosis","Fusarium (marchitez)","Verticilosis","Pudrición de raíz","Virus del mosaico","Mancha angular","Pudrición carbonosa","Marchitez súbita / decaimiento de vid","Punta rizada (curly top)","Mancha bacteriana del fruto"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Raigrás","Sorgo voluntario","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate kikuyo","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Caña de azúcar": {
+      plaga: ["Barrenador del tallo","Mosca pinta (salivazo)","Rata de campo"],
+      enfermedad: ["Carbón","Roya","Roya naranja"],
+      maleza: ["Acahual (gigantón)","Aceitilla","Alpistillo","Amargosa (ambrosía)","Cadillo","Campanilla (Ipomoea)","Cardo","Chayotillo","Diente de león","Falsa verdolaga","Golondrina (lechosa)","Higuerilla","Lengua de pájaro","Malva","Nabo silvestre","Quelite (bledo)","Quelite cenizo","Quesillo","Rodilla de pollo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga","Zacate piojillo","Zacate pitillo"],
+    },
+    "Cebada": {
+      plaga: ["Pulgón","Gusano soldado","Chapulín","Gusano de alambre","Chinche apestosa","Araña roja","Pulgón ruso del trigo","Mosca del tallo del trigo","Chinche negra del zacate","Típula"],
+      enfermedad: ["Roya","Cenicilla (oídio)","Carbón","Pudrición de raíz","Tizones bacterianos","Mancha foliar por Septoria","Carbón parcial (Karnal bunt)","Punta negra","Enanismo amarillo de la cebada","Cornezuelo (ergot)","Mal del pie (take-all)","Escaldadura de la cebada"],
+      maleza: ["Acahual (gigantón)","Aceitilla","Alpistillo","Amargosa (ambrosía)","Cadillo","Campanilla (Ipomoea)","Cardo","Diente de león","Higuerilla","Lengua de pájaro","Malva","Nabo silvestre","Pasto de conejo","Quelite (bledo)","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate azul","Zacate ceboso","Zacate de agua","Zacate liendrilla","Zacate luzaga"],
+    },
+    "Cebolla": {
+      plaga: ["Trips","Minador de la hoja","Mosca de la cebolla","Ácaro del bulbo","Nematodos"],
+      enfermedad: ["Mildiu velloso","Roya","Pudrición de raíz","Tizón foliar por Botritis","Pudrición de cuello y bulbo","Pudrición basal por Fusarium","Mancha púrpura","Pudrición blanca","Moho negro","Moho azul","Pudriciones bacterianas del bulbo","Mancha amarilla del iris","Tizón sureño","Enanismo amarillo de la cebolla"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Centeno grano": {
+      plaga: ["Pulgón","Gusano soldado","Chapulín"],
+      enfermedad: ["Cornezuelo (ergot)","Roya","Cenicilla (oídio)","Escaldadura de la cebada"],
+      maleza: ["Acahual (gigantón)","Aceitilla","Campanilla (Ipomoea)","Quelite (bledo)","Verdolaga (maleza)"],
+    },
+    "Chayote": {
+      plaga: ["Mosca blanca","Pulgón","Trips","Araña roja","Minador de la hoja","Falso medidor","Gusano soldado","Gusano trozador","Diabrótica","Chapulín","Gusano de alambre","Chinche apestosa","Pulga saltona","Chinche de la calabaza","Chicharrita","Mosca de la semilla","Falsa chinche","Tijerilla"],
+      enfermedad: ["Cenicilla (oídio)","Mildiu velloso","Antracnosis","Fusarium (marchitez)","Verticilosis","Pudrición de raíz","Virus del mosaico","Mancha angular","Pudrición carbonosa","Marchitez súbita / decaimiento de vid","Punta rizada (curly top)","Mancha bacteriana del fruto"],
+    },
+    "Chile": {
+      plaga: ["Mosca blanca","Pulgón","Trips","Araña roja","Minador de la hoja","Gusano soldado","Gusano del fruto","Psílido del tomate","Picudo del chile","Pulga saltona","Enrollador de la hoja","Nematodos"],
+      enfermedad: ["Cenicilla (oídio)","Verticilosis","Mancha bacteriana","Pudrición de raíz","Damping-off (ahogamiento de plántula)","Virus del mosaico","Punta rizada (curly top)","Marchitez manchada del tomate","Mancha necrótica del impatiens","Virus del mosaico del tabaco"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Malva","Nabo silvestre","Pasto de conejo","Quelite (bledo)","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate azul","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate liendrilla","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Chícharo": {
+      plaga: ["Pulgón","Trips","Minador de la hoja","Gusano trozador"],
+      enfermedad: ["Rabia del chícharo","Fusarium (marchitez)","Cenicilla (oídio)","Mildiu velloso","Pudrición de raíz"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Col (repollo)": {
+      plaga: ["Palomilla dorso de diamante","Falso medidor","Pulgón","Mosca blanca","Gusano soldado","Gusano trozador","Minador de la hoja","Gusano de alambre","Chinche lygus","Gusano de la col","Mosca de la raíz de la col","Pulga saltona","Chinche bagrada","Sinfílido"],
+      enfermedad: ["Mildiu velloso","Verticilosis","Pudrición de raíz","Mancha bacteriana","Mancha foliar por Alternaria","Pudrición negra","Pierna negra","Amarillamiento por Fusarium","Esclerotinia (moho blanco)","Rhizoctonia","Roya blanca","Hernia de la col (clubroot)","Mancha anillada"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Raigrás","Sorgo voluntario","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate kikuyo","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Col de bruselas": {
+      plaga: ["Palomilla dorso de diamante","Falso medidor","Pulgón","Mosca blanca","Gusano soldado","Gusano trozador","Minador de la hoja","Gusano de alambre","Chinche lygus","Gusano de la col","Mosca de la raíz de la col","Pulga saltona","Chinche bagrada","Sinfílido"],
+      enfermedad: ["Mildiu velloso","Verticilosis","Pudrición de raíz","Mancha bacteriana","Mancha foliar por Alternaria","Pudrición negra","Pierna negra","Amarillamiento por Fusarium","Esclerotinia (moho blanco)","Rhizoctonia","Roya blanca","Hernia de la col (clubroot)","Mancha anillada"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Raigrás","Sorgo voluntario","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate kikuyo","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Coliflor": {
+      plaga: ["Palomilla dorso de diamante","Falso medidor","Pulgón","Mosca blanca","Gusano soldado","Gusano trozador","Minador de la hoja","Gusano de alambre","Chinche lygus","Gusano de la col","Mosca de la raíz de la col","Pulga saltona","Chinche bagrada","Sinfílido"],
+      enfermedad: ["Mildiu velloso","Verticilosis","Pudrición de raíz","Mancha bacteriana","Mancha foliar por Alternaria","Pudrición negra","Pierna negra","Amarillamiento por Fusarium","Esclerotinia (moho blanco)","Rhizoctonia","Roya blanca","Hernia de la col (clubroot)","Mancha anillada"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Cártamo": {
+      plaga: ["Pulgón","Trips","Diabrótica","Gusano del fruto","Minador de la hoja"],
+      enfermedad: ["Roya","Tizón foliar por Alternaria","Falsa cenicilla del cártamo"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Durazno": {
+      plaga: ["Pulgón","Araña roja","Escama","Enrollador de la hoja","Palomilla oriental de la fruta","Gusano del brote del durazno","Barrenador de la corona del durazno","Barrenador ambrosial (shothole borer)","Chinche apestosa","Trips"],
+      enfermedad: ["Pudrición parda","Enchinamiento de la hoja del durazno","Cenicilla (oídio)","Sarna","Tiro de munición","Cancro bacteriano","Agalla de corona","Roya","Verticilosis","Pudrición de raíz","Pudrición de raíz por Armillaria"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Espárrago": {
+      plaga: ["Trips","Gusano soldado","Gusano trozador","Pulgón del espárrago","Escarabajo del espárrago","Minador del espárrago","Sinfílido"],
+      enfermedad: ["Roya","Fusarium (marchitez)","Pudrición de corona y turión","Mancha púrpura","Virus I y II del espárrago"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Frambuesa": {
+      plaga: ["Araña roja","Drosophila de alas manchadas","Mosca blanca","Chicharrita","Enrollador de la hoja","Picudo de la raíz","Barrenador de la corona de frambuesa","Ácaro de la mora roja"],
+      enfermedad: ["Pudrición gris (Botritis)","Cenicilla (oídio)","Mildiu velloso","Verticilosis","Pudrición de raíz","Pudrición de raíz por Armillaria","Roya de la caña y la hoja","Roya anaranjada","Mancha foliar"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Raigrás","Sorgo voluntario","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate kikuyo","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Fresa": {
+      plaga: ["Araña roja","Trips","Pulgón","Mosca blanca","Gusano soldado","Falso medidor","Gusano del fruto","Gusano trozador","Caracol y babosa","Chinche lygus","Ácaro del ciclamen","Drosophila de alas manchadas","Enrollador de la hoja","Gusano peludo","Picudo de la raíz","Tijerilla","Sinfílido"],
+      enfermedad: ["Antracnosis","Pudrición gris (Botritis)","Cenicilla (oídio)","Fusarium (marchitez)","Verticilosis","Pudrición de raíz","Mancha angular","Mancha foliar común","Pudrición de corona por Macrophomina","Pudrición de cuero","Corazón rojo","Pudrición por Rhizopus","Pudrición por Mucor"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Raigrás","Sorgo voluntario","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate kikuyo","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Frijol": {
+      plaga: ["Mosca blanca","Pulgón","Chicharrita","Chinche lygus","Chinche apestosa","Trips","Araña roja","Minador de la hoja","Falso medidor","Gusano soldado","Gusano del fruto","Gusano trozador","Gusano peludo","Diabrótica","Gorgojo del frijol","Mosca de la semilla","Gusano de alambre","Sinfílido","Nematodos"],
+      enfermedad: ["Antracnosis","Tizón común bacteriano","Tizón de halo","Mancha café bacteriana","Virus del mosaico","Mosaico amarillo del frijol","Virus del mosaico de la alfalfa","Punta rizada (curly top)","Fusarium (marchitez)","Pudrición de raíz","Pudrición carbonosa","Moho blanco","Tizón sureño","Damping-off (ahogamiento de plántula)"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Garbanzo": {
+      plaga: ["Pulgón","Gusano del fruto","Trips","Nematodos"],
+      enfermedad: ["Rabia del garbanzo","Fusarium (marchitez)","Pudrición de raíz","Moho blanco"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Raigrás","Sorgo voluntario","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate kikuyo","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Guayaba": {
+      plaga: ["Mosca de la fruta","Cochinilla","Pulgón","Nematodos"],
+      enfermedad: ["Antracnosis","Sarna","Pudrición de raíz","Mancha bacteriana","Fumagina"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Lechuga": {
+      plaga: ["Pulgón","Mosca blanca","Trips","Minador de la hoja","Falso medidor","Gusano soldado","Gusano del fruto","Gusano trozador","Chinche lygus","Gusano peludo","Grillo","Sinfílido","Colémbolos"],
+      enfermedad: ["Mildiu velloso","Cenicilla (oídio)","Fusarium (marchitez)","Verticilosis","Antracnosis","Mancha bacteriana","Virus del mosaico","Marchitez de la lechuga (drop)","Pudrición de corona por Botritis","Amarillamiento del aster","Raíz corchosa","Quemadura de puntas (tipburn)","Vena gruesa (big vein)","Decaimiento de la lechuga"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Lenteja": {
+      plaga: ["Pulgón","Gusano del fruto","Trips"],
+      enfermedad: ["Rabia de la lenteja","Fusarium (marchitez)","Roya","Pudrición gris (Botritis)","Pudrición de raíz"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Raigrás","Sorgo voluntario","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate kikuyo","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Lima": {
+      plaga: ["Psílido asiático de los cítricos","Mosca de la fruta","Escama","Cochinilla","Mosca blanca","Pulgón","Trips","Trips de invernadero","Araña roja","Ácaro tostador de los cítricos","Ácaro de la yema","Ácaro blanco","Minador de la hoja","Minador de la cáscara","Enrollador de la hoja","Gusano soldado","Gusano trozador","Chicharrita de alas cristalinas","Chinche pata de hoja","Escarabajo rosa de Fuller","Hormigas","Caracol y babosa","Chapulín"],
+      enfermedad: ["Huanglongbing (dragón amarillo)","Antracnosis","Gomosis por Phytophthora","Pudrición de raíz","Pudrición parda","Tristeza de los cítricos","Psorosis","Exocortis","Mancha por Septoria","Pudrición por Alternaria","Bacteriosis (citrus blast)","Pudrición seca de la raíz","Pudrición de raíz por Armillaria","Pudrición gris (Botritis)","Fumagina"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Limón": {
+      plaga: ["Psílido asiático de los cítricos","Mosca de la fruta","Escama","Cochinilla","Mosca blanca","Pulgón","Trips","Trips de invernadero","Araña roja","Ácaro tostador de los cítricos","Ácaro de la yema","Ácaro blanco","Minador de la hoja","Minador de la cáscara","Enrollador de la hoja","Gusano soldado","Gusano trozador","Chicharrita de alas cristalinas","Chinche pata de hoja","Escarabajo rosa de Fuller","Hormigas","Caracol y babosa","Chapulín"],
+      enfermedad: ["Huanglongbing (dragón amarillo)","Antracnosis","Gomosis por Phytophthora","Pudrición de raíz","Pudrición parda","Tristeza de los cítricos","Psorosis","Exocortis","Mancha por Septoria","Pudrición por Alternaria","Bacteriosis (citrus blast)","Pudrición seca de la raíz","Pudrición de raíz por Armillaria","Pudrición gris (Botritis)","Fumagina"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Mandarina": {
+      plaga: ["Psílido asiático de los cítricos","Mosca de la fruta","Escama","Cochinilla","Mosca blanca","Pulgón","Trips","Trips de invernadero","Araña roja","Ácaro tostador de los cítricos","Ácaro de la yema","Ácaro blanco","Minador de la hoja","Minador de la cáscara","Enrollador de la hoja","Gusano soldado","Gusano trozador","Chicharrita de alas cristalinas","Chinche pata de hoja","Escarabajo rosa de Fuller","Hormigas","Caracol y babosa","Chapulín"],
+      enfermedad: ["Huanglongbing (dragón amarillo)","Antracnosis","Gomosis por Phytophthora","Pudrición de raíz","Pudrición parda","Tristeza de los cítricos","Psorosis","Exocortis","Mancha por Septoria","Pudrición por Alternaria","Bacteriosis (citrus blast)","Pudrición seca de la raíz","Pudrición de raíz por Armillaria","Pudrición gris (Botritis)","Fumagina"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Manzana": {
+      plaga: ["Gusano de la manzana","Mosca de la manzana","Pulgón","Pulgón lanígero","Escama","Araña roja","Enrollador de la hoja","Gusano del fruto","Minador de la hoja","Chicharrita","Chinche lygus","Chinche apestosa","Trips","Nematodos"],
+      enfermedad: ["Sarna","Cenicilla (oídio)","Tizón de fuego","Cancro europeo","Pudrición de raíz","Pudrición de raíz por Armillaria"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Maíz": {
+      plaga: ["Gusano cogollero","Gusano soldado","Gusano del fruto","Gusano trozador","Pulgón","Chicharrita del maíz","Diabrótica","Chapulín","Gusano de alambre","Mosca de la semilla","Araña roja","Trips","Minador de la hoja","Pulga saltona","Chinche apestosa"],
+      enfermedad: ["Roya","Carbón","Carbón de la espiga","Pudrición de mazorca por Fusarium","Pudrición de tallo por Fusarium","Pudrición de tallo por Pythium","Pudrición carbonosa","Mosaico enano del maíz","Achaparramiento del maíz","Damping-off (ahogamiento de plántula)"],
+      maleza: ["Acahual (gigantón)","Aceitilla","Alpistillo","Amargosa (ambrosía)","Cadillo","Campanilla (Ipomoea)","Cardo","Chayotillo","Cola de zorra","Diente de león","Falsa verdolaga","Fresadilla","Golondrina (lechosa)","Hierba del pastor","Higuerilla","Lengua de pájaro","Malva","Nabo silvestre","Quelite (bledo)","Quelite cenizo","Quesillo","Rodilla de pollo","Tripa de pollo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate de la pasión","Zacate liendrilla","Zacate luzaga","Zacate navajita","Zacate pata de gallina","Zacate pata de ganso","Zacate piojillo","Zacate pitillo","Zacate triguillo"],
+    },
+    "Melón": {
+      plaga: ["Mosca blanca","Pulgón","Trips","Araña roja","Minador de la hoja","Falso medidor","Gusano soldado","Gusano trozador","Diabrótica","Chapulín","Gusano de alambre","Chinche apestosa","Pulga saltona","Chinche de la calabaza","Chicharrita","Mosca de la semilla","Falsa chinche","Tijerilla"],
+      enfermedad: ["Cenicilla (oídio)","Mildiu velloso","Antracnosis","Fusarium (marchitez)","Verticilosis","Pudrición de raíz","Virus del mosaico","Mancha angular","Pudrición carbonosa","Marchitez súbita / decaimiento de vid","Punta rizada (curly top)","Mancha bacteriana del fruto"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Naranja": {
+      plaga: ["Psílido asiático de los cítricos","Mosca de la fruta","Escama","Cochinilla","Mosca blanca","Pulgón","Trips","Trips de invernadero","Araña roja","Ácaro tostador de los cítricos","Ácaro de la yema","Ácaro blanco","Minador de la hoja","Minador de la cáscara","Enrollador de la hoja","Gusano soldado","Gusano trozador","Chicharrita de alas cristalinas","Chinche pata de hoja","Escarabajo rosa de Fuller","Hormigas","Caracol y babosa","Chapulín"],
+      enfermedad: ["Huanglongbing (dragón amarillo)","Antracnosis","Gomosis por Phytophthora","Pudrición de raíz","Pudrición parda","Tristeza de los cítricos","Psorosis","Exocortis","Mancha por Septoria","Pudrición por Alternaria","Bacteriosis (citrus blast)","Pudrición seca de la raíz","Pudrición de raíz por Armillaria","Pudrición gris (Botritis)","Fumagina"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Nuez": {
+      plaga: ["Pulgón","Gusano de la manzana","Araña roja","Escama","Gusano telarañero","Falsa chinche","Mosca de la nuez","Barrenador de la nuez","Gusano barrenador de la almendra","Enrollador de la hoja","Hormigas"],
+      enfermedad: ["Antracnosis","Tizón de la nuez","Agalla de corona","Muerte descendente por Botryosphaeria","Pudrición de raíz","Pudrición de raíz por Armillaria","Cancro profundo de la corteza"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Papa": {
+      plaga: ["Mosca blanca","Pulgón","Psílido del tomate","Chicharrita del betabel","Gusano trozador","Pulga saltona","Palomilla de la papa","Gusano de alambre","Nematodos"],
+      enfermedad: ["Tizón tardío","Tizón temprano","Verticilosis","Fusarium (marchitez)","Pudrición seca por Fusarium","Sarna","Sarna polvorienta","Sarna plateada","Punto negro","Pudrición carbonosa","Pudrición anular bacteriana","Pudrición blanda bacteriana","Pierna negra","Pudrición rosada","Rhizoctonia","Punta rizada (curly top)","Enrollamiento de la hoja de la papa","Virus del mosaico","Punta morada / Big bud","Moho blanco","Tizón sureño"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Papaya": {
+      plaga: ["Pulgón","Mosca de la fruta","Araña roja","Cochinilla","Nematodos","Mosca blanca"],
+      enfermedad: ["Virus de la mancha anular de la papaya","Antracnosis","Pudrición de raíz","Mancha bacteriana","Cenicilla (oídio)"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Pastos y praderas": {
+      plaga: ["Mosca pinta (salivazo)","Gallina ciega","Chapulín","Gusano soldado"],
+      enfermedad: ["Roya","Carbón"],
+      maleza: ["Campanilla (Ipomoea)","Chicalote","Chichibé","Dormilona","Huisachillo","Huizache","Mala mujer","Mezquite","Pica-pica","Platanillo","Quiebraplatos","Subín","Tronadora","Zarza (mimosa)"],
+    },
+    "Pepino": {
+      plaga: ["Mosca blanca","Pulgón","Trips","Araña roja","Minador de la hoja","Falso medidor","Gusano soldado","Gusano trozador","Diabrótica","Chapulín","Gusano de alambre","Chinche apestosa","Pulga saltona","Chinche de la calabaza","Chicharrita","Mosca de la semilla","Falsa chinche","Tijerilla"],
+      enfermedad: ["Cenicilla (oídio)","Mildiu velloso","Antracnosis","Fusarium (marchitez)","Verticilosis","Pudrición de raíz","Virus del mosaico","Mancha angular","Pudrición carbonosa","Marchitez súbita / decaimiento de vid","Punta rizada (curly top)","Mancha bacteriana del fruto"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Pera": {
+      plaga: ["Psila del peral","Gusano de la manzana","Pulgón","Escama","Araña roja","Enrollador de la hoja","Gusano del fruto","Chinche lygus","Chinche apestosa","Cochinilla","Trips","Ácaro ampollador del peral"],
+      enfermedad: ["Tizón de fuego","Sarna","Decaimiento del peral","Pudrición de raíz por Armillaria"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Piña": {
+      plaga: ["Cochinilla","Nematodos"],
+      enfermedad: ["Pudrición del corazón","Pudrición de raíz","Pudrición negra del fruto","Marchitamiento de la piña"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Plátano": {
+      plaga: ["Picudo negro del plátano","Nematodos","Trips","Cochinilla"],
+      enfermedad: ["Sigatoka negra","Fusarium (marchitez)","Moko del plátano","Antracnosis","Virus del estriado del banano"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Rábano": {
+      plaga: ["Pulga saltona","Pulgón","Gusano de la col","Mosca de la raíz de la col","Minador de la hoja"],
+      enfermedad: ["Mancha foliar por Alternaria","Mildiu velloso","Rhizoctonia","Hernia de la col (clubroot)"],
+      maleza: ["Zacate liendrilla","Zacate pata de ganso","Zacate triguillo"],
+    },
+    "Sandía": {
+      plaga: ["Mosca blanca","Pulgón","Trips","Araña roja","Minador de la hoja","Falso medidor","Gusano soldado","Gusano trozador","Diabrótica","Chapulín","Gusano de alambre","Chinche apestosa","Pulga saltona","Chinche de la calabaza","Chicharrita","Mosca de la semilla","Falsa chinche","Tijerilla"],
+      enfermedad: ["Cenicilla (oídio)","Mildiu velloso","Antracnosis","Fusarium (marchitez)","Verticilosis","Pudrición de raíz","Virus del mosaico","Mancha angular","Pudrición carbonosa","Marchitez súbita / decaimiento de vid","Punta rizada (curly top)","Mancha bacteriana del fruto"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Sorgo": {
+      plaga: ["Pulgón amarillo del sorgo","Mosquita del sorgo","Gusano cogollero","Barrenador del tallo","Chapulín","Araña roja"],
+      enfermedad: ["Antracnosis","Mildiu velloso","Carbón","Carbón de la panoja","Rayas foliares bacterianas","Mosaico enano del maíz"],
+      maleza: ["Acahual (gigantón)","Aceitilla","Alpistillo","Amargosa (ambrosía)","Cadillo","Campanilla (Ipomoea)","Cardo","Diente de león","Higuerilla","Lengua de pájaro","Malva","Nabo silvestre","Quelite (bledo)","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Soya": {
+      plaga: ["Mosca blanca","Chinche apestosa","Oruga de la soya","Falso medidor","Gusano soldado","Trips","Araña roja"],
+      enfermedad: ["Roya asiática de la soya","Pudrición por Phytophthora","Pudrición carbonosa","Fusarium (marchitez)","Nematodo del quiste de la soya","Antracnosis"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Tabaco": {
+      plaga: ["Mosca blanca","Pulgón","Gusano tabacalero","Gusano soldado","Gusano trozador","Nematodos"],
+      enfermedad: ["Moho azul del tabaco","Virus del mosaico del tabaco","Pudrición de raíz","Fusarium (marchitez)"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Malva","Pasto de conejo","Quelite (bledo)","Quelite cenizo","Raigrás","Sorgo voluntario","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate azul","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate liendrilla","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Tangelo": {
+      plaga: ["Psílido asiático de los cítricos","Mosca de la fruta","Escama","Cochinilla","Mosca blanca","Pulgón","Trips","Trips de invernadero","Araña roja","Ácaro tostador de los cítricos","Ácaro de la yema","Ácaro blanco","Minador de la hoja","Minador de la cáscara","Enrollador de la hoja","Gusano soldado","Gusano trozador","Chicharrita de alas cristalinas","Chinche pata de hoja","Escarabajo rosa de Fuller","Hormigas","Caracol y babosa","Chapulín"],
+      enfermedad: ["Huanglongbing (dragón amarillo)","Antracnosis","Gomosis por Phytophthora","Pudrición de raíz","Pudrición parda","Tristeza de los cítricos","Psorosis","Exocortis","Mancha por Septoria","Pudrición por Alternaria","Bacteriosis (citrus blast)","Pudrición seca de la raíz","Pudrición de raíz por Armillaria","Pudrición gris (Botritis)","Fumagina"],
+    },
+    "Tangerina": {
+      plaga: ["Psílido asiático de los cítricos","Mosca de la fruta","Escama","Cochinilla","Mosca blanca","Pulgón","Trips","Trips de invernadero","Araña roja","Ácaro tostador de los cítricos","Ácaro de la yema","Ácaro blanco","Minador de la hoja","Minador de la cáscara","Enrollador de la hoja","Gusano soldado","Gusano trozador","Chicharrita de alas cristalinas","Chinche pata de hoja","Escarabajo rosa de Fuller","Hormigas","Caracol y babosa","Chapulín"],
+      enfermedad: ["Huanglongbing (dragón amarillo)","Antracnosis","Gomosis por Phytophthora","Pudrición de raíz","Pudrición parda","Tristeza de los cítricos","Psorosis","Exocortis","Mancha por Septoria","Pudrición por Alternaria","Bacteriosis (citrus blast)","Pudrición seca de la raíz","Pudrición de raíz por Armillaria","Pudrición gris (Botritis)","Fumagina"],
+    },
+    "Tomate": {
+      plaga: ["Mosca blanca","Pulgón","Trips","Psílido del tomate","Chinche apestosa","Chicharrita","Polilla del tomate","Gusano del fruto","Perforador pequeño del fruto","Gusano trozador","Gusano soldado","Gusano alfiler","Minador de la hoja","Araña roja","Ácaro del bronceado","Ácaro blanco","Nematodos","Gallina ciega"],
+      enfermedad: ["Tizón temprano","Tizón tardío","Pudrición gris (Botritis)","Cenicilla (oídio)","Fusarium (marchitez)","Verticilosis","Cancro bacteriano","Mancha bacteriana","Antracnosis","Damping-off (ahogamiento de plántula)","Pudrición de raíz","Virus del mosaico","Virus del rizado amarillo","Peca bacteriana","Cancro del tallo por Alternaria","Moho negro","Marchitez manchada del tomate","Punta rizada (curly top)","Pudrición de corona y raíz por Fusarium","Tizón sureño","Moho blanco","Raíz corchosa","Necrosis de la médula","Clorosis infecciosa del tomate","Enanismo arbustivo","Punta morada / Big bud"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Malva","Nabo silvestre","Pasto de conejo","Quelite (bledo)","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate azul","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate liendrilla","Zacate luzaga","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+    "Tomate verde": {
+      plaga: ["Mosca blanca","Pulgón","Psílido del tomate","Polilla del tomate","Trips","Araña roja","Gusano trozador"],
+      enfermedad: ["Cenicilla (oídio)","Fusarium (marchitez)","Verticilosis","Tizón tardío","Mancha foliar por Cercospora","Mancha bacteriana","Cancro bacteriano","Virus del rizado amarillo","Virus del mosaico"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Raigrás","Sorgo voluntario","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate de agua","Zacate kikuyo","Zacate liendrilla","Zacate luzaga","Zacate pata de gallina","Zacate pata de ganso","Zacate pitillo","Zacate triguillo"],
+    },
+    "Toronja (pomelo)": {
+      plaga: ["Psílido asiático de los cítricos","Mosca de la fruta","Escama","Cochinilla","Mosca blanca","Pulgón","Trips","Trips de invernadero","Araña roja","Ácaro tostador de los cítricos","Ácaro de la yema","Ácaro blanco","Minador de la hoja","Minador de la cáscara","Enrollador de la hoja","Gusano soldado","Gusano trozador","Chicharrita de alas cristalinas","Chinche pata de hoja","Escarabajo rosa de Fuller","Hormigas","Caracol y babosa","Chapulín"],
+      enfermedad: ["Huanglongbing (dragón amarillo)","Antracnosis","Gomosis por Phytophthora","Pudrición de raíz","Pudrición parda","Tristeza de los cítricos","Psorosis","Exocortis","Mancha por Septoria","Pudrición por Alternaria","Bacteriosis (citrus blast)","Pudrición seca de la raíz","Pudrición de raíz por Armillaria","Pudrición gris (Botritis)","Fumagina"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Trigo": {
+      plaga: ["Pulgón","Gusano soldado","Chapulín","Gusano de alambre","Chinche apestosa","Araña roja","Pulgón ruso del trigo","Mosca del tallo del trigo","Chinche negra del zacate","Típula"],
+      enfermedad: ["Roya","Cenicilla (oídio)","Carbón","Pudrición de raíz","Tizones bacterianos","Mancha foliar por Septoria","Carbón parcial (Karnal bunt)","Punta negra","Enanismo amarillo de la cebada","Cornezuelo (ergot)","Mal del pie (take-all)","Escaldadura de la cebada"],
+      maleza: ["Acahual (gigantón)","Aceitilla","Alpistillo","Amargosa (ambrosía)","Cadillo","Campanilla (Ipomoea)","Cardo","Diente de león","Higuerilla","Lengua de pájaro","Malva","Nabo silvestre","Pasto de conejo","Quelite (bledo)","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate azul","Zacate ceboso","Zacate de agua","Zacate liendrilla","Zacate luzaga"],
+    },
+    "Vid": {
+      plaga: ["Araña roja","Trips","Chicharrita","Cochinilla","Escama","Gusano trozador","Filoxera","Barrenador de ramas","Enrollador de la hoja","Doblador de la hoja de la vid","Esqueletonizador de la vid","Chicharrita de alas cristalinas","Drosophila de alas manchadas","Hormigas","Palomilla del manzano"],
+      enfermedad: ["Cenicilla (oídio)","Mildiu velloso","Pudrición gris (Botritis)","Antracnosis","Agalla de corona","Pudrición ácida de racimo","Mal de Pierce","Brazo muerto por Eutypa","Muerte descendente por Botryosphaeria","Esca (sarampión negro)","Phomopsis (cancro y mancha de sarmiento)","Pudrición de raíz por Armillaria","Enfermedades virales de la vid"],
+    },
+    "Zanahoria": {
+      plaga: ["Pulgón","Pulga saltona","Mosca blanca","Nematodos"],
+      enfermedad: ["Tizón foliar por Alternaria","Tizón foliar por Cercospora","Tizón foliar bacteriano","Pudrición blanda bacteriana","Pudrición negra","Mancha de cavidad","Cenicilla (oídio)","Tizón sureño","Moho blanco","Punta morada / Big bud"],
+      maleza: ["Alpistillo","Higuerilla","Lengua de pájaro","Nabo silvestre","Quelite cenizo","Quesillo","Trébol dulce","Verdolaga (maleza)","Zacate Bermuda","Zacate Johnson","Zacate de agua","Zacate luzaga"],
+    },
+    "Zarzamora": {
+      plaga: ["Araña roja","Drosophila de alas manchadas","Mosca blanca","Chicharrita","Enrollador de la hoja","Picudo de la raíz","Ácaro de la mora roja"],
+      enfermedad: ["Pudrición gris (Botritis)","Cenicilla (oídio)","Mildiu velloso","Verticilosis","Pudrición de raíz","Roya anaranjada","Mancha foliar"],
+      maleza: ["Alpistillo","Cebadilla","Cola de zorra","Raigrás","Sorgo voluntario","Zacate Bermuda","Zacate Johnson","Zacate ceboso","Zacate kikuyo","Zacate pata de gallina","Zacate pitillo","Zacate triguillo"],
+    },
+  };
+
+  var PROBLEM_SCIENTIFIC_NAME = {
+    "Acahual (gigantón)": "Thithoria tubiformis",
+    "Aceitilla": "Bidens pilosa",
+    "Achaparramiento del maíz": "Spiroplasma kunkelii",
+    "Agalla de corona": "Agrobacterium vitis",
+    "Alpistillo": "Phalaris minor",
+    "Amargosa (ambrosía)": "Ambrosia spp",
+    "Amarillamiento del aster": "fitoplasma",
+    "Amarillamiento por Fusarium": "F. oxysporum f. sp. conglutinans",
+    "Antracnosis": "Colletotrichum coccodes",
+    "Araña roja": "Tetranychus urticae",
+    "Añublo del arroz (piricularia)": "Pyricularia oryzae",
+    "Bacteriosis (citrus blast)": "Pseudomonas syringae",
+    "Bakanae": "Fusarium fujikuroi",
+    "Barrenador ambrosial (shothole borer)": "Euwallacea spp.",
+    "Barrenador de la corona de frambuesa": "Pennisetia marginata",
+    "Barrenador de la corona del durazno": "Synanthedon exitiosa",
+    "Barrenador de la nuez": "Pityophthorus juglandis",
+    "Barrenador de ramas": "Melalgus confertus",
+    "Barrenador del hueso (aguacate)": "Conotrachelus / Heilipus",
+    "Barrenador del tallo": "Chilo partellus / Diatraea spp.",
+    "Brazo muerto por Eutypa": "Eutypa lata",
+    "Cadillo": "Xanthium strumarium",
+    "Campanilla (Ipomoea)": "Ipomoea purpurea",
+    "Cancro bacteriano": "Clavibacter michiganensis",
+    "Cancro del tallo por Alternaria": "Alternaria alternata f. sp. lycopersici",
+    "Cancro del tronco por Phytophthora": "P. citricola",
+    "Cancro europeo": "Neonectria ditissima",
+    "Cancro profundo de la corteza": "Brenneria rubrifaciens",
+    "Cancro radicular por Rhizoctonia": "Rhizoctonia solani",
+    "Cancro y muerte de ramas": "Botryosphaeria spp.",
+    "Caracol y babosa": "varias especies",
+    "Carbón": "carbón volador Ustilago tritici / cubierto",
+    "Carbón de la espiga": "Sphacelotheca reiliana",
+    "Carbón de la panoja": "Sporisorium reilianum",
+    "Carbón del grano": "Tilletia barclayana",
+    "Carbón parcial (Karnal bunt)": "Tilletia indica",
+    "Cardo": "Cirsium spp",
+    "Cebadilla": "Bromus catharticus",
+    "Cenicilla (oídio)": "Leveillula taurica / Oidium neolycopersici",
+    "Chapulín": "Melanoplus spp.",
+    "Chayotillo": "Sicyos deppei",
+    "Chicalote": "Argemone mexicana",
+    "Chicharrita": "Empoasca fabae",
+    "Chicharrita de alas cristalinas": "Homalodisca vitripennis",
+    "Chicharrita del aster": "Macrosteles quadrilineatus",
+    "Chicharrita del betabel": "Circulifer tenellus",
+    "Chicharrita del maíz": "Dalbulus maidis",
+    "Chichibé": "Sida acuta",
+    "Chinche apestosa": "Lygus lineolaris / Halyomorpha halys",
+    "Chinche bagrada": "Bagrada hilaris",
+    "Chinche de encaje del aguacate": "Pseudacysta perseae",
+    "Chinche de la calabaza": "Anasa tristis",
+    "Chinche lygus": "Lygus hesperus",
+    "Chinche negra del zacate": "Labops hesperius",
+    "Chinche pata de hoja": "Leptoglossus zonatus",
+    "Clorosis infecciosa del tomate": "ToCV",
+    "Cochinilla": "Planococcus ficus (harinosa de la vid)",
+    "Cola de zorra": "Setaria adhaerens",
+    "Colémbolos": "Collembola",
+    "Corazón rojo": "Phytophthora fragariae",
+    "Cornezuelo (ergot)": "Claviceps purpurea",
+    "Curculiónido de la raíz del trébol": "Sitona hispidulus",
+    "Damping-off (ahogamiento de plántula)": "Pythium / Rhizoctonia",
+    "Decaimiento de la lechuga": "TBSV / LNSV",
+    "Decaimiento del peral": "fitoplasma",
+    "Diabrótica": "Diabrotica spp.",
+    "Diente de león": "Taraxacum officinale",
+    "Doblador de la hoja de la vid": "Desmia funeralis",
+    "Dormilona": "Mimosa pudica",
+    "Drosophila de alas manchadas": "Drosophila suzukii",
+    "Enanismo amarillo de la cebada": "BYDV",
+    "Enanismo amarillo de la cebolla": "OYDV",
+    "Enanismo arbustivo": "TBSV",
+    "Enanismo de la alfalfa": "Xylella fastidiosa",
+    "Enchinamiento de la hoja del durazno": "Taphrina deformans",
+    "Enfermedades virales de la vid": "varios",
+    "Enrollador de la hoja": "Amorbia / Platynota",
+    "Enrollador del aguacate (amorbia)": "Amorbia cuneana",
+    "Enrollamiento de la hoja de la papa": "PLRV",
+    "Esca (sarampión negro)": "complejo",
+    "Escaldadura de la cebada": "Rhynchosporium",
+    "Escama": "Parthenolecanium corni",
+    "Escarabajo ampolla": "Epicauta spp.",
+    "Escarabajo del espárrago": "Crioceris asparagi",
+    "Escarabajo rosa de Fuller": "Naupactus godmani",
+    "Esclerotinia (moho blanco)": "Sclerotinia sclerotiorum",
+    "Esqueletonizador de la vid": "Harrisina spp.",
+    "Exocortis": "CEVd",
+    "Falsa cenicilla del cártamo": "Ramularia carthami",
+    "Falsa chinche": "Nysius raphanus",
+    "Falsa verdolaga": "Trianthema portulacastrum",
+    "Falso medidor": "Trichoplusia ni",
+    "Filoxera": "Daktulosphaira vitifoliae",
+    "Fresadilla": "Aldama dentata",
+    "Fumagina": "Capnodium spp.",
+    "Fusarium (marchitez)": "Fusarium oxysporum f. sp. lycopersici",
+    "Gallina ciega": "Phyllophaga spp.",
+    "Golondrina (lechosa)": "Euphorbia maculata",
+    "Gomosis por Phytophthora": "Phytophthora citrophthora",
+    "Gorgojo del frijol": "Acanthoscelides obtectus",
+    "Grillo": "Gryllus spp.",
+    "Grillo mormón": "Anabrus simplex",
+    "Gusano alfiler": "Keiferia lycopersicella",
+    "Gusano barrenador de la almendra": "Amyelois transitella",
+    "Gusano blanco del agave": "Aegiale hesperiaris",
+    "Gusano cogollero": "Spodoptera frugiperda",
+    "Gusano de alambre": "Limonius spp.",
+    "Gusano de la alfalfa": "Colias eurytheme",
+    "Gusano de la col": "Pieris rapae",
+    "Gusano de la manzana": "Cydia pomonella",
+    "Gusano del brote del durazno": "Anarsia lineatella",
+    "Gusano del fruto": "Helicoverpa armigera / Heliothis zea",
+    "Gusano peludo": "Estigmene acrea",
+    "Gusano rosado": "Pectinophora gossypiella",
+    "Gusano soldado": "Spodoptera exigua / Spodoptera frugiperda",
+    "Gusano tabacalero": "Heliothis virescens",
+    "Gusano telarañero": "Loxostege spp.",
+    "Gusano trozador": "Agrotis spp. / Peridroma saucia",
+    "Hernia de la col (clubroot)": "Plasmodiophora brassicae",
+    "Hierba del pastor": "Acalypha indica",
+    "Higuerilla": "Ricinus communis",
+    "Hormigas": "Linepithema humile",
+    "Huanglongbing (dragón amarillo)": "Candidatus Liberibacter asiaticus",
+    "Huisachillo": "Acacia tortuosa",
+    "Huizache": "Acacia farnesiana",
+    "Lengua de pájaro": "Polygonum aviculare",
+    "Mal de Pierce": "Xylella fastidiosa",
+    "Mal del pie (take-all)": "Gaeumannomyces graminis",
+    "Mala mujer": "Cnidoscolus urens",
+    "Malva": "Malva parviflora",
+    "Mancha agregada de la vaina": "Rhizoctonia oryzae-sativae",
+    "Mancha amarilla del iris": "IYSV",
+    "Mancha angular": "Xanthomonas fragariae",
+    "Mancha anillada": "Mycosphaerella brassicicola",
+    "Mancha anular del agave": "AMaV",
+    "Mancha bacteriana": "Xanthomonas spp.",
+    "Mancha bacteriana del fruto": "Acidovorax citrulli",
+    "Mancha café bacteriana": "Pseudomonas syringae",
+    "Mancha de cavidad": "Pythium spp.",
+    "Mancha de sol (sunblotch)": "viroide ASBVd",
+    "Mancha foliar": "Sphaerulina rubi",
+    "Mancha foliar común": "Mycosphaerella fragariae",
+    "Mancha foliar por Alternaria": "Alternaria brassicae",
+    "Mancha foliar por Cercospora": "Cercospora physalidis",
+    "Mancha foliar por Septoria": "Zymoseptoria tritici",
+    "Mancha foliar por Stemphylium": "Stemphylium botryosum",
+    "Mancha necrótica del impatiens": "INSV",
+    "Mancha por Septoria": "Septoria citri",
+    "Mancha púrpura": "Alternaria porri",
+    "Marchitamiento de la piña": "fitoreovirus",
+    "Marchitez bacteriana": "Clavibacter insidiosus",
+    "Marchitez de la lechuga (drop)": "Sclerotinia spp.",
+    "Marchitez manchada del tomate": "TSWV",
+    "Marchitez súbita / decaimiento de vid": "complejo",
+    "Medidor omnívoro": "Sabulodes aegrotata",
+    "Mezquite": "Prosopis juniflora",
+    "Mildiu velloso": "Pseudoperonospora cubensis",
+    "Minador de la cáscara": "Marmara gulosa",
+    "Minador de la hoja": "Liriomyza huidobrensis / Liriomyza trifolii / Liriomyza sativae",
+    "Minador del arroz": "Hydrellia griseola",
+    "Minador del espárrago": "Ophiomyia simplex",
+    "Moho azul": "Penicillium spp.",
+    "Moho azul del tabaco": "Peronospora tabacina",
+    "Moho blanco": "Sclerotinia sclerotiorum",
+    "Moho negro": "Alternaria alternata",
+    "Moko del plátano": "Ralstonia solanacearum",
+    "Mosaico amarillo del frijol": "BYMV",
+    "Mosaico enano del maíz": "MDMV",
+    "Mosca blanca": "Bemisia tabaci / Trialeurodes vaporariorum",
+    "Mosca de la cebolla": "Delia antiqua",
+    "Mosca de la fruta": "Anastrepha ludens",
+    "Mosca de la manzana": "Rhagoletis pomonella",
+    "Mosca de la nuez": "Rhagoletis completa",
+    "Mosca de la raíz de la col": "Delia radicum",
+    "Mosca de la semilla": "Delia platura",
+    "Mosca del tallo del trigo": "Meromyza americana",
+    "Mosca pinta (salivazo)": "Aeneolamia spp.",
+    "Mosquita de la semilla del arroz": "Chironomus spp.",
+    "Mosquita del sorgo": "Stenodiplosis sorghicola",
+    "Muerte descendente por Botryosphaeria": "Botryosphaeria spp.",
+    "Muerte descendente por Fusarium": "Fusarium euwallaceae",
+    "Nabo silvestre": "Brassica campestris",
+    "Necrosis de la médula": "Pseudomonas corrugata",
+    "Nematodo del quiste de la soya": "Heterodera glycines",
+    "Nematodos": "Meloidogyne spp.",
+    "Oruga de la soya": "Anticarsia gemmatalis",
+    "Palomilla de la papa": "Phthorimaea operculella",
+    "Palomilla del manzano": "Epiphyas postvittana",
+    "Palomilla dorso de diamante": "Plutella xylostella",
+    "Palomilla oriental de la fruta": "Grapholita molesta",
+    "Pasto de conejo": "Panicum reptans",
+    "Peca bacteriana": "Pseudomonas syringae pv. tomato",
+    "Perforador de la hoja del algodón": "Bucculatrix thurberiella",
+    "Perforador del fruto de la berenjena": "Leucinodes orbonalis",
+    "Perforador pequeño del fruto": "Neoleucinodes elegantallis",
+    "Phomopsis (cancro y mancha de sarmiento)": "Phomopsis viticola",
+    "Pica-pica": "Mucuna pruriens",
+    "Picudo acuático del arroz": "Lissorhoptrus oryzophilus",
+    "Picudo de la alfalfa": "Hypera postica",
+    "Picudo de la raíz": "Otiorhynchus spp.",
+    "Picudo del agave": "Scyphophorus acupunctatus",
+    "Picudo del algodonero": "Anthonomus grandis",
+    "Picudo del chile": "Anthonomus eugenii",
+    "Picudo negro del plátano": "Cosmopolites sordidus",
+    "Pierna negra": "Leptosphaeria maculans",
+    "Platanillo": "Heliconia bihai",
+    "Polilla del tomate": "Tuta absoluta",
+    "Psila del peral": "Cacopsylla pyricola",
+    "Psorosis": "CPsV",
+    "Psílido asiático de los cítricos": "Diaphorina citri",
+    "Psílido del tomate": "Bactericera cockerelli",
+    "Pudriciones bacterianas del bulbo": "Burkholderia spp.",
+    "Pudrición anular bacteriana": "Clavibacter sepedonicus",
+    "Pudrición basal por Fusarium": "F. oxysporum f. sp. cepae",
+    "Pudrición blanca": "Sclerotium cepivorum",
+    "Pudrición blanda bacteriana": "Pectobacterium carotovorum",
+    "Pudrición carbonosa": "Macrophomina phaseolina",
+    "Pudrición de corona por Botritis": "Botrytis cinerea",
+    "Pudrición de corona por Macrophomina": "Macrophomina phaseolina",
+    "Pudrición de corona y raíz por Fusarium": "F. oxysporum f. sp. radicis-lycopersici",
+    "Pudrición de corona y turión": "Fusarium / Phytophthora",
+    "Pudrición de cuello y bulbo": "Botrytis allii",
+    "Pudrición de cuero": "Phytophthora cactorum",
+    "Pudrición de fruto por Phytophthora": "P. citricola",
+    "Pudrición de mazorca por Fusarium": "Fusarium verticillioides",
+    "Pudrición de raíz": "Phytophthora spp.",
+    "Pudrición de raíz por Armillaria": "Armillaria mellea",
+    "Pudrición de raíz por Rosellinia": "Rosellinia necatrix",
+    "Pudrición de tallo por Fusarium": "Fusarium spp.",
+    "Pudrición de tallo por Pythium": "Pythium aphanidermatum",
+    "Pudrición del corazón": "Phytophthora cinnamomi / P. parasitica",
+    "Pudrición del tallo del arroz": "Sclerotium oryzae",
+    "Pudrición gris (Botritis)": "Botrytis cinerea",
+    "Pudrición negra": "Xanthomonas campestris pv. campestris",
+    "Pudrición negra del fruto": "Ceratocystis paradoxa",
+    "Pudrición parda": "Phytophthora citrophthora",
+    "Pudrición peduncular del fruto": "complejo",
+    "Pudrición por Alternaria": "Alternaria alternata",
+    "Pudrición por Mucor": "Mucor spp.",
+    "Pudrición por Phytophthora": "Phytophthora sojae",
+    "Pudrición por Rhizopus": "Rhizopus spp.",
+    "Pudrición rosada": "Phytophthora erythroseptica",
+    "Pudrición seca de la raíz": "Fusarium solani",
+    "Pudrición seca por Fusarium": "Fusarium sambucinum",
+    "Pudrición texana de la raíz": "Phymatotrichopsis omnivora",
+    "Pudrición ácida de racimo": "complejo",
+    "Pulga saltona": "Epitrix spp.",
+    "Pulgón": "Myzus persicae / Aphis gossypii / Macrosiphum euphorbiae / Aulacorthum solani",
+    "Pulgón amarillo del sorgo": "Melanaphis sacchari",
+    "Pulgón azul de la alfalfa": "Acyrthosiphon kondoi",
+    "Pulgón del espárrago": "Brachycorynella asparagi",
+    "Pulgón lanígero": "Eriosoma lanigerum",
+    "Pulgón moteado de la alfalfa": "Therioaphis maculata",
+    "Pulgón ruso del trigo": "Diuraphis noxia",
+    "Punta morada / Big bud": "fitoplasma",
+    "Punta negra": "Alternaria / Bipolaris",
+    "Punta rizada (curly top)": "BCTV",
+    "Punto negro": "Colletotrichum coccodes",
+    "Quelite (bledo)": "Amaranthus spp",
+    "Quelite cenizo": "Chenopodium album",
+    "Quemadura de puntas (tipburn)": "fisiológico (calcio)",
+    "Quesillo": "Anoda cristata",
+    "Quiebraplatos": "Crotalaria saggitalis",
+    "Rabia de la lenteja": "Ascochyta lentis",
+    "Rabia del chícharo": "Ascochyta pisi",
+    "Rabia del garbanzo": "Ascochyta rabiei",
+    "Raigrás": "Lolium multiflorum",
+    "Rata de campo": "Sigmodon hispidus",
+    "Raya negra del aguacate": "sin agente confirmado",
+    "Rayas foliares bacterianas": "Xanthomonas / Pseudomonas",
+    "Raíz corchosa": "Pyrenochaeta lycopersici",
+    "Rhizoctonia": "Rhizoctonia solani",
+    "Rodilla de pollo": "Boerhavia erecta",
+    "Roya": "Puccinia allii",
+    "Roya anaranjada": "Gymnoconia nitens",
+    "Roya asiática de la soya": "Phakopsora pachyrhizi",
+    "Roya blanca": "Albugo candida",
+    "Roya de la caña y la hoja": "Kuehneola uredinis",
+    "Roya naranja": "Puccinia kuehnii",
+    "Saltahojas de tres esquinas": "Spissistilus festinus",
+    "Sarna": "Streptomyces scabies",
+    "Sarna plateada": "Helminthosporium solani",
+    "Sarna polvorienta": "Spongospora subterranea",
+    "Sigatoka negra": "Pseudocercospora fijiensis",
+    "Sinfílido": "Scutigerella immaculata",
+    "Sorgo voluntario": "Sorghum vulgare",
+    "Subín": "Acacia cornigera",
+    "Tallo negro de primavera": "Phoma medicaginis",
+    "Tallo negro de verano": "Cercospora medicaginis",
+    "Tijerilla": "Forficula auricularia",
+    "Tiro de munición": "Wilsonomyces carpophilus",
+    "Tizones bacterianos": "Xanthomonas / Pseudomonas",
+    "Tizón común bacteriano": "Xanthomonas axonopodis pv. phaseoli",
+    "Tizón de fuego": "Erwinia amylovora",
+    "Tizón de halo": "Pseudomonas savastanoi pv. phaseolicola",
+    "Tizón de la nuez": "Xanthomonas arboricola pv. juglandis",
+    "Tizón foliar bacteriano": "Xanthomonas hortorum pv. carotae",
+    "Tizón foliar por Alternaria": "Alternaria dauci",
+    "Tizón foliar por Botritis": "Botrytis squamosa",
+    "Tizón foliar por Cercospora": "Cercospora carotae",
+    "Tizón sureño": "Sclerotium rolfsii",
+    "Tizón tardío": "Phytophthora infestans",
+    "Tizón temprano": "Alternaria solani",
+    "Tripa de pollo": "Commelina diffusa",
+    "Trips": "Frankliniella occidentalis / Thrips tabaci",
+    "Trips de invernadero": "Heliothrips haemorrhoidalis",
+    "Tristeza de los cítricos": "CTV",
+    "Tronadora": "Tecoma stans",
+    "Trébol dulce": "Melilotus indicus",
+    "Típula": "Tipula spp.",
+    "Vena gruesa (big vein)": "MLBVV",
+    "Verdolaga (maleza)": "Portulaca oleracea",
+    "Verticilosis": "Verticillium dahliae",
+    "Viruela tardía del cacahuate": "Cercosporidium personatum",
+    "Viruela temprana del cacahuate": "Cercospora arachidicola",
+    "Virus I y II del espárrago": "AV-I / AV-II",
+    "Virus de la mancha anular de la papaya": "PRSV",
+    "Virus del estriado del banano": "BSV",
+    "Virus del mosaico": "ToMV / CMV / potyvirus",
+    "Virus del mosaico de la alfalfa": "AMV",
+    "Virus del mosaico del tabaco": "TMV / tobamovirus",
+    "Virus del rizado amarillo": "TYLCV",
+    "Zacate Bermuda": "Cynodon dactylon",
+    "Zacate Johnson": "Sorghum halepense",
+    "Zacate azul": "Poa annua",
+    "Zacate ceboso": "Leptochloa filiformis",
+    "Zacate de agua": "Echinochloa colonum",
+    "Zacate de la pasión": "Eragrostis ciliaris",
+    "Zacate kikuyo": "Pennisetum clandestinum",
+    "Zacate liendrilla": "Eragrostis mexicana",
+    "Zacate luzaga": "Digitaria sanguinalis",
+    "Zacate navajita": "Chloris chloridea",
+    "Zacate pata de gallina": "Eleusine indica",
+    "Zacate pata de ganso": "Eleusine multiflora",
+    "Zacate piojillo": "Panicum hirticaule",
+    "Zacate pitillo": "Ixophorus unisetus",
+    "Zacate triguillo": "Brachiaria plantaginea",
+    "Zarza (mimosa)": "Mimosa pigra",
+    "Ácaro ampollador del peral": "Eriophyes pyri",
+    "Ácaro blanco": "Polyphagotarsonemus latus",
+    "Ácaro de la mora roja": "Acalitus essigi",
+    "Ácaro de la yema": "Aceria sheldoni",
+    "Ácaro del bronceado": "Aculops lycopersici",
+    "Ácaro del bulbo": "Rhizoglyphus spp.",
+    "Ácaro del ciclamen": "Phytonemus pallidus",
+    "Ácaro persea": "Oligonychus perseae",
+    "Ácaro tostador de los cítricos": "Phyllocoptruta oleivora"
+  };
+
+  var CURATED_PROBLEM_CATEGORY = {
+    "Acahual (gigantón)": "maleza",
+    "Aceitilla": "maleza",
+    "Achaparramiento del maíz": "enfermedad",
+    "Agalla de corona": "enfermedad",
+    "Alpistillo": "maleza",
+    "Amargosa (ambrosía)": "maleza",
+    "Amarillamiento del aster": "enfermedad",
+    "Amarillamiento por Fusarium": "enfermedad",
+    "Antracnosis": "enfermedad",
+    "Araña roja": "plaga",
+    "Añublo del arroz (piricularia)": "enfermedad",
+    "Bacteriosis (citrus blast)": "enfermedad",
+    "Bakanae": "enfermedad",
+    "Barrenador ambrosial (shothole borer)": "plaga",
+    "Barrenador de la corona de frambuesa": "plaga",
+    "Barrenador de la corona del durazno": "plaga",
+    "Barrenador de la nuez": "plaga",
+    "Barrenador de ramas": "plaga",
+    "Barrenador del hueso (aguacate)": "plaga",
+    "Barrenador del tallo": "plaga",
+    "Brazo muerto por Eutypa": "enfermedad",
+    "Cadillo": "maleza",
+    "Campanilla (Ipomoea)": "maleza",
+    "Cancro bacteriano": "enfermedad",
+    "Cancro del tallo por Alternaria": "enfermedad",
+    "Cancro del tronco por Phytophthora": "enfermedad",
+    "Cancro europeo": "enfermedad",
+    "Cancro profundo de la corteza": "enfermedad",
+    "Cancro radicular por Rhizoctonia": "enfermedad",
+    "Cancro y muerte de ramas": "enfermedad",
+    "Caracol y babosa": "plaga",
+    "Carbón": "enfermedad",
+    "Carbón de la espiga": "enfermedad",
+    "Carbón de la panoja": "enfermedad",
+    "Carbón del grano": "enfermedad",
+    "Carbón parcial (Karnal bunt)": "enfermedad",
+    "Cardo": "maleza",
+    "Cebadilla": "maleza",
+    "Cenicilla (oídio)": "enfermedad",
+    "Chapulín": "plaga",
+    "Chayotillo": "maleza",
+    "Chicalote": "maleza",
+    "Chicharrita": "plaga",
+    "Chicharrita de alas cristalinas": "plaga",
+    "Chicharrita del aster": "plaga",
+    "Chicharrita del betabel": "plaga",
+    "Chicharrita del maíz": "plaga",
+    "Chichibé": "maleza",
+    "Chinche apestosa": "plaga",
+    "Chinche bagrada": "plaga",
+    "Chinche de encaje del aguacate": "plaga",
+    "Chinche de la calabaza": "plaga",
+    "Chinche lygus": "plaga",
+    "Chinche negra del zacate": "plaga",
+    "Chinche pata de hoja": "plaga",
+    "Clorosis infecciosa del tomate": "enfermedad",
+    "Cochinilla": "plaga",
+    "Cola de zorra": "maleza",
+    "Colémbolos": "plaga",
+    "Corazón rojo": "enfermedad",
+    "Cornezuelo (ergot)": "enfermedad",
+    "Curculiónido de la raíz del trébol": "plaga",
+    "Damping-off (ahogamiento de plántula)": "enfermedad",
+    "Decaimiento de la lechuga": "enfermedad",
+    "Decaimiento del peral": "enfermedad",
+    "Diabrótica": "plaga",
+    "Diente de león": "maleza",
+    "Doblador de la hoja de la vid": "plaga",
+    "Dormilona": "maleza",
+    "Drosophila de alas manchadas": "plaga",
+    "Enanismo amarillo de la cebada": "enfermedad",
+    "Enanismo amarillo de la cebolla": "enfermedad",
+    "Enanismo arbustivo": "enfermedad",
+    "Enanismo de la alfalfa": "enfermedad",
+    "Enchinamiento de la hoja del durazno": "enfermedad",
+    "Enfermedades virales de la vid": "enfermedad",
+    "Enrollador de la hoja": "plaga",
+    "Enrollador del aguacate (amorbia)": "plaga",
+    "Enrollamiento de la hoja de la papa": "enfermedad",
+    "Esca (sarampión negro)": "enfermedad",
+    "Escaldadura de la cebada": "enfermedad",
+    "Escama": "plaga",
+    "Escarabajo ampolla": "plaga",
+    "Escarabajo del espárrago": "plaga",
+    "Escarabajo rosa de Fuller": "plaga",
+    "Esclerotinia (moho blanco)": "enfermedad",
+    "Esqueletonizador de la vid": "plaga",
+    "Exocortis": "enfermedad",
+    "Falsa cenicilla del cártamo": "enfermedad",
+    "Falsa chinche": "plaga",
+    "Falsa verdolaga": "maleza",
+    "Falso medidor": "plaga",
+    "Filoxera": "plaga",
+    "Fresadilla": "maleza",
+    "Fumagina": "enfermedad",
+    "Fusarium (marchitez)": "enfermedad",
+    "Gallina ciega": "plaga",
+    "Golondrina (lechosa)": "maleza",
+    "Gomosis por Phytophthora": "enfermedad",
+    "Gorgojo del frijol": "plaga",
+    "Grillo": "plaga",
+    "Grillo mormón": "plaga",
+    "Gusano alfiler": "plaga",
+    "Gusano barrenador de la almendra": "plaga",
+    "Gusano blanco del agave": "plaga",
+    "Gusano cogollero": "plaga",
+    "Gusano de alambre": "plaga",
+    "Gusano de la alfalfa": "plaga",
+    "Gusano de la col": "plaga",
+    "Gusano de la manzana": "plaga",
+    "Gusano del brote del durazno": "plaga",
+    "Gusano del fruto": "plaga",
+    "Gusano peludo": "plaga",
+    "Gusano rosado": "plaga",
+    "Gusano soldado": "plaga",
+    "Gusano tabacalero": "plaga",
+    "Gusano telarañero": "plaga",
+    "Gusano trozador": "plaga",
+    "Hernia de la col (clubroot)": "enfermedad",
+    "Hierba del pastor": "maleza",
+    "Higuerilla": "maleza",
+    "Hormigas": "plaga",
+    "Huanglongbing (dragón amarillo)": "enfermedad",
+    "Huisachillo": "maleza",
+    "Huizache": "maleza",
+    "Lengua de pájaro": "maleza",
+    "Mal de Pierce": "enfermedad",
+    "Mal del pie (take-all)": "enfermedad",
+    "Mala mujer": "maleza",
+    "Malva": "maleza",
+    "Mancha agregada de la vaina": "enfermedad",
+    "Mancha amarilla del iris": "enfermedad",
+    "Mancha angular": "enfermedad",
+    "Mancha anillada": "enfermedad",
+    "Mancha anular del agave": "enfermedad",
+    "Mancha bacteriana": "enfermedad",
+    "Mancha bacteriana del fruto": "enfermedad",
+    "Mancha café bacteriana": "enfermedad",
+    "Mancha de cavidad": "enfermedad",
+    "Mancha de sol (sunblotch)": "enfermedad",
+    "Mancha foliar": "enfermedad",
+    "Mancha foliar común": "enfermedad",
+    "Mancha foliar por Alternaria": "enfermedad",
+    "Mancha foliar por Cercospora": "enfermedad",
+    "Mancha foliar por Septoria": "enfermedad",
+    "Mancha foliar por Stemphylium": "enfermedad",
+    "Mancha necrótica del impatiens": "enfermedad",
+    "Mancha por Septoria": "enfermedad",
+    "Mancha púrpura": "enfermedad",
+    "Marchitamiento de la piña": "enfermedad",
+    "Marchitez bacteriana": "enfermedad",
+    "Marchitez de la lechuga (drop)": "enfermedad",
+    "Marchitez manchada del tomate": "enfermedad",
+    "Marchitez súbita / decaimiento de vid": "enfermedad",
+    "Medidor omnívoro": "plaga",
+    "Mezquite": "maleza",
+    "Mildiu velloso": "enfermedad",
+    "Minador de la cáscara": "plaga",
+    "Minador de la hoja": "plaga",
+    "Minador del arroz": "plaga",
+    "Minador del espárrago": "plaga",
+    "Moho azul": "enfermedad",
+    "Moho azul del tabaco": "enfermedad",
+    "Moho blanco": "enfermedad",
+    "Moho negro": "enfermedad",
+    "Moko del plátano": "enfermedad",
+    "Mosaico amarillo del frijol": "enfermedad",
+    "Mosaico enano del maíz": "enfermedad",
+    "Mosca blanca": "plaga",
+    "Mosca de la cebolla": "plaga",
+    "Mosca de la fruta": "plaga",
+    "Mosca de la manzana": "plaga",
+    "Mosca de la nuez": "plaga",
+    "Mosca de la raíz de la col": "plaga",
+    "Mosca de la semilla": "plaga",
+    "Mosca del tallo del trigo": "plaga",
+    "Mosca pinta (salivazo)": "plaga",
+    "Mosquita de la semilla del arroz": "plaga",
+    "Mosquita del sorgo": "plaga",
+    "Muerte descendente por Botryosphaeria": "enfermedad",
+    "Muerte descendente por Fusarium": "enfermedad",
+    "Nabo silvestre": "maleza",
+    "Necrosis de la médula": "enfermedad",
+    "Nematodo del quiste de la soya": "enfermedad",
+    "Nematodos": "plaga",
+    "Oruga de la soya": "plaga",
+    "Palomilla de la papa": "plaga",
+    "Palomilla del manzano": "plaga",
+    "Palomilla dorso de diamante": "plaga",
+    "Palomilla oriental de la fruta": "plaga",
+    "Pasto de conejo": "maleza",
+    "Peca bacteriana": "enfermedad",
+    "Perforador de la hoja del algodón": "plaga",
+    "Perforador del fruto de la berenjena": "plaga",
+    "Perforador pequeño del fruto": "plaga",
+    "Phomopsis (cancro y mancha de sarmiento)": "enfermedad",
+    "Pica-pica": "maleza",
+    "Picudo acuático del arroz": "plaga",
+    "Picudo de la alfalfa": "plaga",
+    "Picudo de la raíz": "plaga",
+    "Picudo del agave": "plaga",
+    "Picudo del algodonero": "plaga",
+    "Picudo del chile": "plaga",
+    "Picudo negro del plátano": "plaga",
+    "Pierna negra": "enfermedad",
+    "Platanillo": "maleza",
+    "Polilla del tomate": "plaga",
+    "Psila del peral": "plaga",
+    "Psorosis": "enfermedad",
+    "Psílido asiático de los cítricos": "plaga",
+    "Psílido del tomate": "plaga",
+    "Pudriciones bacterianas del bulbo": "enfermedad",
+    "Pudrición anular bacteriana": "enfermedad",
+    "Pudrición basal por Fusarium": "enfermedad",
+    "Pudrición blanca": "enfermedad",
+    "Pudrición blanda bacteriana": "enfermedad",
+    "Pudrición carbonosa": "enfermedad",
+    "Pudrición de corona por Botritis": "enfermedad",
+    "Pudrición de corona por Macrophomina": "enfermedad",
+    "Pudrición de corona y raíz por Fusarium": "enfermedad",
+    "Pudrición de corona y turión": "enfermedad",
+    "Pudrición de cuello y bulbo": "enfermedad",
+    "Pudrición de cuero": "enfermedad",
+    "Pudrición de fruto por Phytophthora": "enfermedad",
+    "Pudrición de mazorca por Fusarium": "enfermedad",
+    "Pudrición de raíz": "enfermedad",
+    "Pudrición de raíz por Armillaria": "enfermedad",
+    "Pudrición de raíz por Rosellinia": "enfermedad",
+    "Pudrición de tallo por Fusarium": "enfermedad",
+    "Pudrición de tallo por Pythium": "enfermedad",
+    "Pudrición del corazón": "enfermedad",
+    "Pudrición del tallo del arroz": "enfermedad",
+    "Pudrición gris (Botritis)": "enfermedad",
+    "Pudrición negra": "enfermedad",
+    "Pudrición negra del fruto": "enfermedad",
+    "Pudrición parda": "enfermedad",
+    "Pudrición peduncular del fruto": "enfermedad",
+    "Pudrición por Alternaria": "enfermedad",
+    "Pudrición por Mucor": "enfermedad",
+    "Pudrición por Phytophthora": "enfermedad",
+    "Pudrición por Rhizopus": "enfermedad",
+    "Pudrición rosada": "enfermedad",
+    "Pudrición seca de la raíz": "enfermedad",
+    "Pudrición seca por Fusarium": "enfermedad",
+    "Pudrición texana de la raíz": "enfermedad",
+    "Pudrición ácida de racimo": "enfermedad",
+    "Pulga saltona": "plaga",
+    "Pulgón": "plaga",
+    "Pulgón amarillo del sorgo": "plaga",
+    "Pulgón azul de la alfalfa": "plaga",
+    "Pulgón del espárrago": "plaga",
+    "Pulgón lanígero": "plaga",
+    "Pulgón moteado de la alfalfa": "plaga",
+    "Pulgón ruso del trigo": "plaga",
+    "Punta morada / Big bud": "enfermedad",
+    "Punta negra": "enfermedad",
+    "Punta rizada (curly top)": "enfermedad",
+    "Punto negro": "enfermedad",
+    "Quelite (bledo)": "maleza",
+    "Quelite cenizo": "maleza",
+    "Quemadura de puntas (tipburn)": "enfermedad",
+    "Quesillo": "maleza",
+    "Quiebraplatos": "maleza",
+    "Rabia de la lenteja": "enfermedad",
+    "Rabia del chícharo": "enfermedad",
+    "Rabia del garbanzo": "enfermedad",
+    "Raigrás": "maleza",
+    "Rata de campo": "plaga",
+    "Raya negra del aguacate": "enfermedad",
+    "Rayas foliares bacterianas": "enfermedad",
+    "Raíz corchosa": "enfermedad",
+    "Rhizoctonia": "enfermedad",
+    "Rodilla de pollo": "maleza",
+    "Roya": "enfermedad",
+    "Roya anaranjada": "enfermedad",
+    "Roya asiática de la soya": "enfermedad",
+    "Roya blanca": "enfermedad",
+    "Roya de la caña y la hoja": "enfermedad",
+    "Roya naranja": "enfermedad",
+    "Saltahojas de tres esquinas": "plaga",
+    "Sarna": "enfermedad",
+    "Sarna plateada": "enfermedad",
+    "Sarna polvorienta": "enfermedad",
+    "Sigatoka negra": "enfermedad",
+    "Sinfílido": "plaga",
+    "Sorgo voluntario": "maleza",
+    "Subín": "maleza",
+    "Tallo negro de primavera": "enfermedad",
+    "Tallo negro de verano": "enfermedad",
+    "Tijerilla": "plaga",
+    "Tiro de munición": "enfermedad",
+    "Tizones bacterianos": "enfermedad",
+    "Tizón común bacteriano": "enfermedad",
+    "Tizón de fuego": "enfermedad",
+    "Tizón de halo": "enfermedad",
+    "Tizón de la nuez": "enfermedad",
+    "Tizón foliar bacteriano": "enfermedad",
+    "Tizón foliar por Alternaria": "enfermedad",
+    "Tizón foliar por Botritis": "enfermedad",
+    "Tizón foliar por Cercospora": "enfermedad",
+    "Tizón sureño": "enfermedad",
+    "Tizón tardío": "enfermedad",
+    "Tizón temprano": "enfermedad",
+    "Tripa de pollo": "maleza",
+    "Trips": "plaga",
+    "Trips de invernadero": "plaga",
+    "Tristeza de los cítricos": "enfermedad",
+    "Tronadora": "maleza",
+    "Trébol dulce": "maleza",
+    "Típula": "plaga",
+    "Vena gruesa (big vein)": "enfermedad",
+    "Verdolaga (maleza)": "maleza",
+    "Verticilosis": "enfermedad",
+    "Viruela tardía del cacahuate": "enfermedad",
+    "Viruela temprana del cacahuate": "enfermedad",
+    "Virus I y II del espárrago": "enfermedad",
+    "Virus de la mancha anular de la papaya": "enfermedad",
+    "Virus del estriado del banano": "enfermedad",
+    "Virus del mosaico": "enfermedad",
+    "Virus del mosaico de la alfalfa": "enfermedad",
+    "Virus del mosaico del tabaco": "enfermedad",
+    "Virus del rizado amarillo": "enfermedad",
+    "Zacate Bermuda": "maleza",
+    "Zacate Johnson": "maleza",
+    "Zacate azul": "maleza",
+    "Zacate ceboso": "maleza",
+    "Zacate de agua": "maleza",
+    "Zacate de la pasión": "maleza",
+    "Zacate kikuyo": "maleza",
+    "Zacate liendrilla": "maleza",
+    "Zacate luzaga": "maleza",
+    "Zacate navajita": "maleza",
+    "Zacate pata de gallina": "maleza",
+    "Zacate pata de ganso": "maleza",
+    "Zacate piojillo": "maleza",
+    "Zacate pitillo": "maleza",
+    "Zacate triguillo": "maleza",
+    "Zarza (mimosa)": "maleza",
+    "Ácaro ampollador del peral": "plaga",
+    "Ácaro blanco": "plaga",
+    "Ácaro de la mora roja": "plaga",
+    "Ácaro de la yema": "plaga",
+    "Ácaro del bronceado": "plaga",
+    "Ácaro del bulbo": "plaga",
+    "Ácaro del ciclamen": "plaga",
+    "Ácaro persea": "plaga",
+    "Ácaro tostador de los cítricos": "plaga"
+  };
+
+  var PROBLEM_CATEGORIES = ['Plaga', 'Enfermedad', 'Maleza', 'Nutrición'];
+
+  // Respaldo por categoría: sin esto, elegir "Maleza" caía a los destacados
+  // genéricos, que son todos plagas (mosca blanca, pulgón...).
+  var PROBLEMS_BY_CATEGORY = null;
+  function problemsByCategory(categoryValue){
+    if(!PROBLEMS_BY_CATEGORY){
+      PROBLEMS_BY_CATEGORY = { plaga:[], enfermedad:[], maleza:[], nutricion:[] };
+      PROBLEMAS_GENERICOS.forEach(function(p){
+        if(PROBLEM_CATEGORIES.indexOf(p) !== -1) return;
+        var c = CATEGORY_BY_PROBLEM[p];
+        if(c && PROBLEMS_BY_CATEGORY[c] && PROBLEMS_BY_CATEGORY[c].indexOf(p) === -1) PROBLEMS_BY_CATEGORY[c].push(p);
+      });
+    }
+    return PROBLEMS_BY_CATEGORY[categoryValue] || null;
+  }
+
+  // 1) lista curada del cultivo; 2) si no, todos los de esa categoría.
+  // Maleza y Nutrición se quedan en el nivel 2 a propósito: herbicidas y
+  // fertilizantes del catálogo son de uso general, así que curar por cultivo
+  // no cambiaría qué producto se recomienda.
+  function problemsForCrop(cropValue, categoryValue){
+    if(!categoryValue) return null;
+    var byCat = CROP_PROBLEMS[cropValue];
+    var curated = byCat && byCat[categoryValue];
+    if(curated && curated.length) return curated;
+    var generic = problemsByCategory(categoryValue);
+    return (generic && generic.length) ? generic : null;
+  }
+
   var ALL_PROBLEMS = [
     'Plaga', 'Enfermedad', 'Maleza', 'Nutrición', 'Mosca blanca', 'Pulgón', 'Araña roja', 'Trips',
     'Minador de la hoja', 'Gusano cogollero', 'Gusano soldado', 'Palomilla dorso de diamante',
@@ -1411,12 +2446,19 @@
     'Deficiencia de cobre':'nutricion', 'Deficiencia de molibdeno':'nutricion',
   };
 
+  // CURATED_PROBLEM_CATEGORY entra aquí porque todo problema curado necesita
+  // categoría: sin ella el filtro por cultivo y matchProducts se rompen.
   var CATEGORY_BY_PROBLEM = Object.assign({
     'Plaga':'plaga', 'Mosca blanca':'plaga', 'Pulgón':'plaga', 'Araña roja':'plaga', 'Trips':'plaga',
     'Enfermedad':'enfermedad',
     'Maleza':'maleza',
     'Nutrición':'nutricion'
-  }, PROBLEM_CATEGORY_ADDITIONS);
+  }, PROBLEM_CATEGORY_ADDITIONS, CURATED_PROBLEM_CATEGORY);
+
+  var PROBLEMAS_GENERICOS = ALL_PROBLEMS.slice();
+  Object.keys(CURATED_PROBLEM_CATEGORY).forEach(function(p){
+    if(ALL_PROBLEMS.indexOf(p) === -1) ALL_PROBLEMS.push(p);
+  });
 
   // Vacío: ya existe catálogo real (con distribuidor vinculado) en Supabase
   // para insecticidas, herbicidas y fungicidas, así que no hace falta mostrar
@@ -1639,9 +2681,54 @@
     return false;
   }
 
-  // Nunca mezcla categorías: primero coincidencia exacta de cultivo dentro
-  // de la categoría pedida, luego el resto de esa misma categoría. Dentro
-  // de cada nivel, el orden es aleatorio en cada búsqueda.
+  // Los pills usan el nombre corto ("Tomate") pero las fichas usan el del
+  // catálogo SIAP ("Tomate rojo (jitomate)"). Sin alias, buscar "Tomate" no
+  // encontraba ninguno de los insecticidas registrados para tomate.
+  var CROP_ALIASES = {
+    'Tomate': ['Tomate', 'Tomate rojo (jitomate)'],
+    'Chile': ['Chile', 'Chile verde']
+  };
+  function productMatchesCrop(p, cropValue){
+    var names = CROP_ALIASES[cropValue] || [cropValue];
+    return p.crops.some(function(c){ return names.indexOf(c) !== -1; });
+  }
+
+  // Dentro de "plaga" caben cosas muy distintas: sin esto, "Lechuga + Pulgón"
+  // recomendaba veneno para ratas y "Tomate + Nematodos" insecticidas foliares.
+  var SPECIALIZED_TYPES = ['Rodenticida', 'Nematicida', 'Acaricida'];
+  var REQUIRED_TYPES_BY_PROBLEM = {
+    'Rata de campo': ['Rodenticida'],
+    'Nematodos': ['Nematicida'],
+    'Araña roja': ['Acaricida'],
+    'Ácaro blanco': ['Acaricida'],
+    'Ácaro del bronceado': ['Acaricida'],
+    'Ácaro del ciclamen': ['Acaricida'],
+    'Ácaro persea': ['Acaricida']
+  };
+  function cropHasProducts(cropValue){
+    var names = CROP_ALIASES[cropValue] || [cropValue];
+    return PRODUCTS.some(function(p){
+      return p.crops.some(function(c){ return names.indexOf(c) !== -1; });
+    });
+  }
+  function sortCropsByCoverage(list){
+    var con = [], sin = [];
+    list.forEach(function(c){ (cropHasProducts(c) ? con : sin).push(c); });
+    var az = function(a,b){ return a.localeCompare(b,'es'); };
+    return con.sort(az).concat(sin.sort(az));
+  }
+
+  function productMatchesProblem(p, problemValue){
+    var required = REQUIRED_TYPES_BY_PROBLEM[problemValue];
+    if(required) return required.indexOf(p.type) !== -1;
+    return SPECIALIZED_TYPES.indexOf(p.type) === -1;
+  }
+
+  // Nunca mezcla categorías, y nunca recomienda un producto que no esté
+  // registrado para el cultivo: primero los específicos, luego los de uso
+  // general ('any'). Si no hay ninguno devuelve vacío a propósito, para que
+  // la pantalla diga que por el momento no aparece producto en vez de
+  // rellenar con productos ajenos (antes "Tomate + Plaga" sugería rodenticidas).
   function matchProducts(cropValue, problemValue){
     var category = CATEGORY_BY_PROBLEM[problemValue] || null;
     var inCategory = category ? PRODUCTS.filter(function(p){ return p.category === category; }) : PRODUCTS.slice();
@@ -1651,13 +2738,14 @@
       inCategory = inCategory.filter(function(p){ return productHasNutrient(p, deficiencyKey); });
     }
 
-    var cropSpecific = shuffle(inCategory.filter(function(p){ return p.crops.indexOf(cropValue) !== -1; }));
+    inCategory = inCategory.filter(function(p){ return productMatchesProblem(p, problemValue); });
+
+    var cropSpecific = shuffle(inCategory.filter(function(p){ return productMatchesCrop(p, cropValue); }));
     var cropAny = shuffle(inCategory.filter(function(p){ return p.crops.indexOf('any') !== -1; }));
-    var rest = shuffle(inCategory.filter(function(p){ return p.crops.indexOf(cropValue) === -1 && p.crops.indexOf('any') === -1; }));
 
     var seen = {};
     var out = [];
-    [cropSpecific, cropAny, rest].forEach(function(pool){
+    [cropSpecific, cropAny].forEach(function(pool){
       pool.forEach(function(p){
         if(out.length >= 3) return;
         var key = p.mfg + '|' + p.name;
@@ -1680,7 +2768,7 @@
     if(matches.length === 0){
       var empty = document.createElement('div');
       empty.className = 'empty-results';
-      empty.textContent = 'Aún no tenemos productos de ejemplo para "' + cropValue + ' + ' + problemValue + '" en esta demo. En la app real, aquí se sumarían fabricantes y distribuidores.';
+      empty.textContent = 'Por el momento no aparece ningún producto para "' + cropValue + ' + ' + problemValue + '" entre los distribuidores registrados.';
       grid.appendChild(empty);
       return;
     }
@@ -1858,12 +2946,26 @@
       bindPill(el);
     }
 
-    // Visible = (destacado o catálogo desplegado) y coincide con la búsqueda.
+    // scope: cuando está puesto (problemas curados del cultivo+categoría), solo
+    // se ven esos. Desplegar el catálogo completo lo ignora a propósito.
+    var scope = null;
+    function setScope(values){
+      scope = values;
+      // Se marcan como "extra" para que, al quitar el scope, no se queden
+      // pegadas como si fueran destacados del catálogo base.
+      if(values) values.forEach(function(v){ addPill(v, v, true); });
+      applyVisibility();
+    }
+
+    // Visible = (en alcance o catálogo desplegado) y coincide con la búsqueda.
     function applyVisibility(){
       var q = normalizeText(search.value.trim());
       var anyVisible = false;
       pills.forEach(function(p){
-        var inScope = expanded || p.getAttribute('data-extra') !== '1';
+        var inScope;
+        if(expanded) inScope = true;
+        else if(scope) inScope = scope.indexOf(p.getAttribute('data-value')) !== -1;
+        else inScope = p.getAttribute('data-extra') !== '1';
         var match = q.length === 0 || normalizeText(p.getAttribute('data-value')).indexOf(q) !== -1;
         var visible = inScope && match;
         p.classList.toggle('hidden', !visible);
@@ -1893,20 +2995,28 @@
       toggle.addEventListener('click', function(){
         expanded = !expanded;
         if(expanded && !catalogLoaded){
-          catalog.forEach(function(name){ addPill(name, name, true); });
+          // En cultivos van primero los que sí tienen producto: si no, hay que
+          // bajar entre 250 nombres para encontrar cuáles sirven.
+          var lista = (prefix === 'crop') ? sortCropsByCoverage(catalog) : catalog;
+          lista.forEach(function(name){ addPill(name, name, true); });
           catalogLoaded = true;
         }
         toggle.textContent = expanded ? '← Ver solo destacados' : ('··· Ver todos los ' + noun);
         row.classList.toggle('expanded', expanded);
         if(catalogNote){
-          catalogNote.textContent = 'Catálogo completo (' + pills.length + ' ' + noun + ') — usa el buscador de arriba para filtrar.';
+          var conProd = (prefix === 'crop')
+            ? pills.filter(function(p){ return cropHasProducts(p.getAttribute('data-value')); }).length
+            : 0;
+          catalogNote.textContent = 'Catálogo completo (' + pills.length + ' ' + noun + ')'
+            + (conProd ? ' — los primeros ' + conProd + ' ya tienen producto en el catálogo; el resto aparece después.' : '')
+            + ' Usa el buscador de arriba para filtrar.';
           catalogNote.classList.toggle('show', expanded);
         }
         applyVisibility();
       });
     }
 
-    return { get: function(){ return current || defaultValue; }, addPill: addPill };
+    return { get: function(){ return current || defaultValue; }, addPill: addPill, setScope: setScope };
   }
 
   setupProductSearch();
@@ -1915,10 +3025,21 @@
   var cta = document.getElementById('search-cta');
 
   var CTA_CAT_COLOR = { plaga:'--cat-plaga', enfermedad:'--cat-enfermedad', maleza:'--cat-maleza', nutricion:'--cat-nutricion' };
+
+  // Al elegir cultivo o categoría se muestran solo los problemas de esa
+  // categoría que le dan a ese cultivo. Sin curación, quedan los destacados.
+  function refreshProblemScope(){
+    if(!problem || !problem.setScope) return;
+    var cat = CATEGORY_BY_PROBLEM[problem.get()];
+    var curated = problemsForCrop(crop.get(), cat);
+    problem.setScope(curated ? PROBLEM_CATEGORIES.concat(curated) : null);
+  }
+
   function updateCta(){
     cta.textContent = 'Buscar: ' + crop.get() + ' + ' + problem.get();
     var cat = CATEGORY_BY_PROBLEM[problem.get()];
     cta.style.background = 'var(' + (CTA_CAT_COLOR[cat] || '--green') + ')';
+    refreshProblemScope();
   }
   updateCta();
 
