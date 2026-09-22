@@ -262,6 +262,14 @@
     box-shadow:0 4px 12px -4px color-mix(in srgb, var(--green) 60%, transparent);
   }
   .pill.hidden{display:none;}
+  /* "chosen" = el problema concreto que elegiste dentro de la categoría: mismo
+     color pero claro, para que la categoría conserve su relleno y se vea en
+     cuál estás parado. */
+  .pill.chosen{ font-weight:700; }
+  #problem-pills .pill[data-cat="plaga"].chosen{ background:var(--cat-plaga-tint); border-color:var(--cat-plaga); color:var(--cat-plaga); }
+  #problem-pills .pill[data-cat="enfermedad"].chosen{ background:var(--cat-enfermedad-tint); border-color:var(--cat-enfermedad); color:var(--cat-enfermedad); }
+  #problem-pills .pill[data-cat="maleza"].chosen{ background:var(--cat-maleza-tint); border-color:var(--cat-maleza); color:var(--cat-maleza); }
+  #problem-pills .pill[data-cat="nutricion"].chosen{ background:var(--cat-nutricion-tint); border-color:var(--cat-nutricion); color:var(--cat-nutricion); }
   /* Catálogo completo de cultivos: la lista se vuelve larga, así que se
      limita la altura y se deja el control de volver siempre visible. */
   .pill-row.expanded{
@@ -2917,15 +2925,29 @@
 
     function select(value){
       current = value;
-      pills.forEach(function(p){
-        p.classList.toggle('active', p.getAttribute('data-value') === value);
-      });
+      if(prefix === 'problem'){
+        // La categoría conserva el relleno mientras estés dentro de ella; el
+        // problema concreto se marca en claro (clase "chosen").
+        var catActiva = CATEGORY_BY_PROBLEM[value] || null;
+        pills.forEach(function(p){
+          var v = p.getAttribute('data-value');
+          var esCategoria = PROBLEM_CATEGORIES.indexOf(v) !== -1;
+          p.classList.toggle('active', esCategoria && CATEGORY_BY_PROBLEM[v] === catActiva);
+          p.classList.toggle('chosen', !esCategoria && v === value);
+        });
+      } else {
+        pills.forEach(function(p){
+          p.classList.toggle('active', p.getAttribute('data-value') === value);
+        });
+      }
       updateCta();
     }
 
     function bindPill(pill){
       pill.addEventListener('click', function(){
-        select(pill.getAttribute('data-value'));
+        var v = pill.getAttribute('data-value');
+        if(prefix === 'problem' && typeof onPickProblem === 'function') onPickProblem(v);
+        select(v);
       });
     }
     pills.forEach(bindPill);
@@ -3026,12 +3048,25 @@
 
   var CTA_CAT_COLOR = { plaga:'--cat-plaga', enfermedad:'--cat-enfermedad', maleza:'--cat-maleza', nutricion:'--cat-nutricion' };
 
-  // Al elegir cultivo o categoría se muestran solo los problemas de esa
-  // categoría que le dan a ese cultivo. Sin curación, quedan los destacados.
+  // Categoría desplegada. En null solo se ven las 4 categorías; tocar la que
+  // ya está abierta la pliega.
+  var categoriaAbierta = 'plaga';
+
+  // Tocar una categoría la abre; tocarla otra vez estando abierta, la pliega.
+  // Elegir un problema concreto no cambia qué categoría está abierta.
+  function onPickProblem(valor){
+    var cat = CATEGORY_BY_PROBLEM[valor] || null;
+    if(PROBLEM_CATEGORIES.indexOf(valor) !== -1){
+      categoriaAbierta = (categoriaAbierta === cat) ? null : cat;
+    } else if(cat){
+      categoriaAbierta = cat;
+    }
+  }
+
   function refreshProblemScope(){
     if(!problem || !problem.setScope) return;
-    var cat = CATEGORY_BY_PROBLEM[problem.get()];
-    var curated = problemsForCrop(crop.get(), cat);
+    if(!categoriaAbierta){ problem.setScope(PROBLEM_CATEGORIES); return; }
+    var curated = problemsForCrop(crop.get(), categoriaAbierta);
     problem.setScope(curated ? PROBLEM_CATEGORIES.concat(curated) : null);
   }
 
