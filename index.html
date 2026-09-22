@@ -3043,7 +3043,10 @@
 
   setupProductSearch();
   var crop = setupField('crop', 'Tomate', ALL_CROPS, null, 'cultivos');
-  var problem = setupField('problem', 'Plaga', ALL_PROBLEMS, PROBLEM_CATEGORY_ADDITIONS, 'problemas');
+  // CATEGORY_BY_PROBLEM y no PROBLEM_CATEGORY_ADDITIONS: ese último solo tiene
+  // las etiquetas viejas, así que los problemas curados se quedaban sin
+  // data-cat y por tanto sin color de categoría.
+  var problem = setupField('problem', 'Plaga', ALL_PROBLEMS, CATEGORY_BY_PROBLEM, 'problemas');
   var cta = document.getElementById('search-cta');
 
   var CTA_CAT_COLOR = { plaga:'--cat-plaga', enfermedad:'--cat-enfermedad', maleza:'--cat-maleza', nutricion:'--cat-nutricion' };
