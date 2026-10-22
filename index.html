@@ -391,6 +391,16 @@
   .result-card[data-cat="enfermedad"] .result-type{ color:var(--cat-enfermedad); background:var(--cat-enfermedad-tint); border-color:transparent; }
   .result-card[data-cat="maleza"] .result-type{ color:var(--cat-maleza); background:var(--cat-maleza-tint); border-color:transparent; }
   .result-card[data-cat="nutricion"] .result-type{ color:var(--cat-nutricion); background:var(--cat-nutricion-tint); border-color:transparent; }
+  .result-reg{
+    display:inline-block; align-self:flex-start; width:fit-content;
+    margin-top:8px; font-size:11px; font-weight:700;
+    letter-spacing:.02em; padding:2px 8px; border-radius:10px;
+    border:1px solid currentColor; color:var(--stone);
+  }
+  .result-card[data-cat="plaga"] .result-reg{ color:var(--cat-plaga); }
+  .result-card[data-cat="enfermedad"] .result-reg{ color:var(--cat-enfermedad); }
+  .result-card[data-cat="maleza"] .result-reg{ color:var(--cat-maleza); }
+  .result-card[data-cat="nutricion"] .result-reg{ color:var(--cat-nutricion); }
   .result-specs{
     list-style:none;
     margin:16px 0 0;
@@ -789,7 +799,7 @@
       </div>
     </div>
     <div class="result-grid" id="result-grid"></div>
-    <div class="compare-foot"><span class="pin" style="color:var(--terra); font-family:var(--font-mono);">◍</span> Ejemplo para la beta: las moléculas y sus grupos de modo de acción son reales. El registro en el cultivo, la dosis y los intervalos se verifican contra la etiqueta autorizada antes de publicarse.</div>
+    <div class="compare-foot"><span class="pin" style="color:var(--terra); font-family:var(--font-mono);">◍</span> Las marcadas como registradas en México traen su dosis, intervalo y reentrada de la ficha técnica autorizada. Las demás son moléculas que sirven para el problema, pero su registro en este cultivo está por verificar — confirma siempre contra la etiqueta del envase.</div>
   </div>
 </section>
 
@@ -1111,7 +1121,7 @@
     'Avena', 'Baby back choi', 'Bambú', 'Bangaña', 'Begonia', 'Belén', 'Berenjena', 'Betabel',
     'Boi choi', 'Brócoli', 'Cacahuate', 'Cacao', 'Café cereza', 'Caimito', 'Calabacita', 'Calabaza',
     'Calabaza semilla o chihua', 'Calancoe', 'Camote', 'Caña de azúcar', 'Canola', 'Capulín',
-    'Carambolo', 'Cártamo', 'Cebada', 'Cebolla', 'Centeno grano', 'Cereza', 'Chabacano', 'Chayote',
+    'Carambolo', 'Cártamo', 'Cebada', 'Cebolla', 'Cebollín', 'Centeno grano', 'Cereza', 'Chabacano', 'Chayote',
     'Chía', 'Chícharo', 'Chilacayote', 'Chile seco', 'Chile verde', 'Chirimoya', 'Chives',
     'Cilantro', 'Cineraria', 'Ciruela', 'Clavel', 'Clyptoria', 'Coco fruta', 'Col (repollo)',
     'Col de bruselas', 'Coliflor', 'Comino', 'Copra', 'Coquia', 'Crisantemo', 'Cyclamen', 'Dalia',
@@ -1125,7 +1135,7 @@
     'Lenteja', 'Lilium', 'Lima', 'Limón', 'Limón real', 'Limonium', 'Litchi', 'Macadamia', 'Maguey',
     'Maguey forrajero', 'Maguey mixiotero', 'Maguey pulquero (miles de lts.)', 'Maíz', 'Malanga',
     'Mamey', 'Mandarina', 'Mango', 'Mangostán', 'Mano de león', 'Manzana', 'Manzanilla', 'Maracuyá',
-    'Marañón', 'Margarita', 'Mejorana', 'Melón', 'Melón amargo', 'Membrillo', 'Menta', 'Moringa',
+    'Marañón', 'Margarita', 'Mejorana', 'Melón', 'Melón amargo', 'Membrillo', 'Menta', 'Moringa', 'Mostaza',
     'Nabo', 'Nanche', 'Napa', 'Naranja', 'Nardo', 'Níspero', 'Nochebuena', 'Noni', 'Nopal forrajero',
     'Nopalitos', 'Nube', 'Nuez', 'Okra (angú o gombo)', 'Orégano', 'Orquídea',
     'Palma africana o de aceite', 'Palma camedor', 'Palma de ornato', 'Palma taco', 'Papa', 'Pápalo',
@@ -2177,11 +2187,952 @@
   function problemsForCrop(cropValue, categoryValue){
     if(!categoryValue) return null;
     var byCat = CROP_PROBLEMS[cropValue];
-    var curated = byCat && byCat[categoryValue];
-    if(curated && curated.length) return curated;
+    var curated = (byCat && byCat[categoryValue]) || [];
+    // Las plagas con etiqueta mexicana van primero: son las únicas que
+    // pueden mostrar dosis e intervalo reales.
+    var conRegistro = (categoryValue === 'plaga' && REGISTROS[cropValue])
+      ? Object.keys(REGISTROS[cropValue]) : [];
+    var juntos = conRegistro.concat(curated.filter(function(p){ return conRegistro.indexOf(p) === -1; }));
+    if(juntos.length) return juntos;
     var generic = problemsByCategory(categoryValue);
     return (generic && generic.length) ? generic : null;
   }
+
+  // ---- INICIO REGISTROS MEXICANOS (generado, no editar a mano) ----
+  // Lo que las etiquetas mexicanas sí amparan: cultivo, plaga, dosis,
+  // intervalo de seguridad, reentrada y registro COFEPRIS, con el enlace a la
+  // ficha. Mismos datos que src/data/registros.js de la app.
+  // 51 cultivos, 371 combinaciones, 7 moléculas (todas de FMC México).
+  var REGISTROS = {
+    'Aguacate': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'112.5-137.5 mL/1000 L de agua', phi:'14', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Gusano enrollador': [
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+    },
+    'Ajo': {
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'150-250 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'1000-1500 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Algodón hueso': {
+      'Chinche lygus': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150-250 g/ha', phi:'30', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'400-500 mL/ha', phi:'14', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+      ],
+      'Gusano tabacalero': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'14', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.3-0.5 L/ha', phi:'14', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'28', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-250 g/ha', phi:'30', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+    },
+    'Arándano': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'112.5-137.5 mL/1000 L de agua', phi:'3', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+    },
+    'Arroz palay': {
+      'Pulgón amarillo del sorgo': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.2-0.3 L/ha', phi:'14', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+      ],
+    },
+    'Avena': {
+      'Pulgón amarillo del sorgo': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.2-0.3 L/ha', phi:'14', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+      ],
+    },
+    'Berenjena': {
+      'Falso medidor': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+      ],
+      'Gusano del fruto': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100 mL/ha foliar (3 apl. c/10 d) · 150-200 mL/ha foliar (2 apl. c/15 d) · 250-375 mL/ha base de planta o goteo · 12.5-18.75 mL/1000 plantas pre-trasplante', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-500 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'1.0-1.25 L/ha (drench o riego por goteo)', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'400-800 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Psílido del tomate': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-750 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150-250 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'200-300 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+      ],
+    },
+    'Brócoli': {
+      'Falso medidor': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Palomilla dorso de diamante': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Pulgón cenizo': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.2-0.3 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'100-250 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'750-1250 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Calabacita': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-300 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Barrenador del fruto': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Falso medidor': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano de la guía del melón': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-125 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'125 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.750-1.250 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'7', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'600-800 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.750-1.250 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+    },
+    'Calabaza': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-300 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Barrenador del fruto': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Falso medidor': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.750-1.250 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'7', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'600-800 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.750-1.250 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+    },
+    'Canola': {
+      'Falso medidor': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Palomilla dorso de diamante': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Pulgón cenizo': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'750-1250 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Cebada': {
+      'Pulgón amarillo del sorgo': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.2-0.3 L/ha', phi:'14', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+      ],
+    },
+    'Cebolla': {
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'150-250 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'1000-1500 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Cebollín': {
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'1000-1500 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Chayote': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-300 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Barrenador del fruto': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Falso medidor': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano de la guía del melón': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-125 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'125 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'7', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'600-800 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Chile verde': {
+      'Ácaro blanco': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-500 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Falso medidor': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano del fruto': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-500 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100 mL/ha foliar · 150-200 mL/ha foliar · 10-20 mL/1000 plantas base de planta', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'1.0-1.25 L/ha (drench o riego por goteo)', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'400-800 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Psílido del tomate': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-750 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150-250 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'200-300 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+      ],
+    },
+    'Col (repollo)': {
+      'Falso medidor': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Palomilla dorso de diamante': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Pulgón cenizo': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.2-0.3 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'100-250 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'750-1250 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Col de bruselas': {
+      'Falso medidor': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Palomilla dorso de diamante': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Pulgón cenizo': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.2-0.3 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'100-250 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'750-1250 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Coliflor': {
+      'Falso medidor': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Palomilla dorso de diamante': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Pulgón cenizo': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.2-0.3 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'100-250 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'750-1250 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Espárrago': {
+      'Gusano soldado': [
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'150-250 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'200-300 mL/ha (ninfas)', phi:'7', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+      ],
+    },
+    'Frambuesa': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'112.5-137.5 mL/1000 L de agua', phi:'3', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Drosophila de alas manchadas': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'400-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-1000 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-750 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-1000 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Fresa': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'112.5-137.5 mL/1000 L de agua', phi:'3', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Drosophila de alas manchadas': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'400-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-1000 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-750 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-1000 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Lechuga': {
+      'Pulgón': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'100-125 g/ha', phi:'SL', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+    },
+    'Lima': {
+      'Ácaro tostador de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'150-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Minador de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Psílido asiático de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-300 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.04-0.06 L/100 L de agua', phi:'1', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+      ],
+    },
+    'Limón': {
+      'Ácaro tostador de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'150-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Minador de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Psílido asiático de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-300 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.04-0.06 L/100 L de agua', phi:'1', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+      ],
+    },
+    'Maíz': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-300 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Gusano cogollero': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'100-250 mL/ha', phi:'14', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'14', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Pulgón amarillo del sorgo': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.2-0.3 L/ha', phi:'14', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+      ],
+    },
+    'Mandarina': {
+      'Ácaro tostador de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'150-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Minador de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Psílido asiático de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-300 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.04-0.06 L/100 L de agua', phi:'1', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+      ],
+    },
+    'Manzana': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-300 mL/ha', phi:'28', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Chinche lygus': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150-250 g/ha', phi:'21', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+      'Gusano de la manzana': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'40-60 mL/100 L de agua', phi:'14', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'20-25 mL/100 L de agua', phi:'14', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Pulgón lanígero': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'100-200 g/ha', phi:'21', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+    },
+    'Melón': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-300 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Barrenador del fruto': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Falso medidor': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano de la guía del melón': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-125 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'125 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.750-1.250 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'7', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'600-800 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.750-1.250 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+    },
+    'Membrillo': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-300 mL/ha', phi:'28', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Pulgón lanígero': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'100-200 g/ha', phi:'21', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+    },
+    'Mostaza': {
+      'Falso medidor': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Palomilla dorso de diamante': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Pulgón cenizo': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'750-1250 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Nabo': {
+      'Falso medidor': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Palomilla dorso de diamante': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha · 300-400 mL/ha riego por goteo', phi:'3', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Pulgón cenizo': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'750-1250 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Naranja': {
+      'Ácaro tostador de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'150-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Minador de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Psílido asiático de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-300 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.04-0.06 L/100 L de agua', phi:'1', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+      ],
+    },
+    'Níspero': {
+      'Pulgón lanígero': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'100-200 g/ha', phi:'21', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+    },
+    'Nuez': {
+      'Barrenador de la nuez': [
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'(ver ficha: volumen 1000-1100 L de agua/ha)', phi:'10', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Pulgón amarillo del nogal': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150-200 g/ha', phi:'40', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+    },
+    'Okra (angú o gombo)': {
+      'Trips': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'200-300 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+      ],
+    },
+    'Papa': {
+      'Gusano alfiler': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100 mL/ha foliar (3 apl. c/10 d) · 150-200 mL/ha foliar (2 apl. c/15 d)', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-500 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100 mL/ha foliar (3 apl. c/10 d) · 150-200 mL/ha foliar (2 apl. c/15 d)', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'1.0-1.25 L/ha (drench o riego por goteo)', phi:'7', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'400-800 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Psílido del tomate': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'7', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'7', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-750 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'200-300 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+      ],
+    },
+    'Papaya': {
+      'Mosca blanca': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'14', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+      ],
+    },
+    'Pepino': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-300 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Barrenador del fruto': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Falso medidor': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano de la guía del melón': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-125 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'125 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.750-1.250 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'7', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'600-800 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.750-1.250 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+    },
+    'Pera': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-300 mL/ha', phi:'28', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Chinche lygus': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150-250 g/ha', phi:'21', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+      'Pulgón lanígero': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'100-200 g/ha', phi:'21', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+    },
+    'Poro (leek)': {
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'150-250 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'1000-1500 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+    'Rábano': {
+      'Falso medidor': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+      ],
+      'Palomilla dorso de diamante': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'300-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+      ],
+    },
+    'Sandía': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-300 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Barrenador del fruto': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Falso medidor': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano de la guía del melón': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-125 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'125 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.750-1.250 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'7', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'600-800 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.750-1.250 L/ha', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+      ],
+    },
+    'Sorgo': {
+      'Gusano cogollero': [
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'75-125 mL/ha', phi:'14', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Pulgón amarillo del sorgo': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.2-0.3 L/ha', phi:'30', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+      ],
+    },
+    'Tomate': {
+      'Ácaro blanco': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-500 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Falso medidor': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+      ],
+      'Gusano alfiler': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100 mL/ha foliar (3 apl. c/10 d) · 150-200 mL/ha foliar (2 apl. c/15 d) · 250-375 mL/ha base de planta o goteo', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano del fruto': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-400 mL/ha', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100 mL/ha foliar (3 apl. c/10 d) · 150-200 mL/ha foliar (2 apl. c/15 d) · 250-375 mL/ha base de planta o goteo · 12.5-18.75 mL/1000 plantas pre-trasplante', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-500 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'1.0-1.25 L/ha (drench o riego por goteo)', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'400-800 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Psílido del tomate': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-750 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150-250 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'200-300 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+      ],
+    },
+    'Tomate verde': {
+      'Ácaro blanco': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-500 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Falso medidor': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+      ],
+      'Gusano del fruto': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Indoxacarb', group:'IRAC 22A', type:'Insecticida', dosis:'200-500 mL/ha', phi:'3', rei:'12', registro:'RSCO-INAC-01020-0246-009-15.84', marcas:['Avaunt EC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Avaunt%20EC.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100 mL/ha foliar (3 apl. c/10 d) · 150-200 mL/ha foliar (2 apl. c/15 d) · 250-375 mL/ha base de planta o goteo · 12.5-18.75 mL/1000 plantas pre-trasplante', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'250-500 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-400 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'1.0-1.25 L/ha (drench o riego por goteo)', phi:'21', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'400-800 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Psílido del tomate': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'250-300 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'200-300 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-750 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Flonicamid', group:'IRAC 29', type:'Insecticida', dosis:'150-250 g/ha', phi:'0', rei:'2', registro:'RSCO-INAC-0103P-305-032-050', marcas:['Beleaf (ISK/FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20Beleaf.pdf' },
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'200-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'200-300 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+      ],
+    },
+    'Toronja (pomelo)': {
+      'Ácaro tostador de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'150-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Minador de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-250 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Psílido asiático de los cítricos': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'200-300 mL/ha', phi:'7', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.04-0.06 L/100 L de agua', phi:'1', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+      ],
+    },
+    'Trigo': {
+      'Pulgón amarillo del sorgo': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.2-0.3 L/ha', phi:'14', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+      ],
+    },
+    'Triticale': {
+      'Pulgón amarillo del sorgo': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'0.2-0.3 L/ha', phi:'14', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+      ],
+    },
+    'Vid': {
+      'Cochinilla': [
+        { name:'Imidacloprid', group:'IRAC 4A', type:'Insecticida', dosis:'1.0-2.0 L/ha', phi:'30', rei:'12', registro:'RSCO-INAC-0199-357-064-031', marcas:['Picus 350 SC (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20T%C3%A9cnica%20-%20PICUS%20350%20SC.pdf' },
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'400-600 mL/ha', phi:'21', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+      ],
+      'Trips': [
+        { name:'Piriproxifen', group:'IRAC 7C', type:'Insecticida', dosis:'400-600 mL/ha', phi:'21', rei:'12', registro:'RSCO-INAC-1104P-X0447-009-19', marcas:['Stone 200 CE (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Stone%20200%20CE.pdf' },
+      ],
+    },
+    'Zarzamora': {
+      'Araña roja': [
+        { name:'Abamectina', group:'IRAC 6', type:'Insecticida/Acaricida', dosis:'112.5-137.5 mL/1000 L de agua', phi:'3', rei:'24', registro:'RSCO-INAC-0174-326-330-004', marcas:['Thor 3.6 EW (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-04/Ficha%20t%C3%A9cnica%20-%20Thor%203.6%20EW.pdf' },
+      ],
+      'Drosophila de alas manchadas': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Gusano soldado': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'300-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+        { name:'Clorantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'100-200 mL/ha foliar', phi:'1', rei:'4', registro:'RSCO-INAC-0104A-301-026-018', marcas:['Coragen (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-06/Ficha%20T%C3%A9cnica%20-%20CORAGEN.pdf' },
+      ],
+      'Minador de la hoja': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'400-500 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Mosca blanca': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-1000 mL/ha (ninfas)', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Pulgón': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-750 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+      'Trips': [
+        { name:'Ciantraniliprol', group:'IRAC 28', type:'Insecticida', dosis:'500-1000 mL/ha', phi:'1', rei:'12', registro:'RSCO-INAC-0190-0332-409-10.26', marcas:['Benevia (FMC)'], fuente:'https://ag.fmc.com/mx/sites/default/files/2026-05/Ficha%20T%C3%A9cnica%20-%20Benevia.pdf' },
+      ],
+    },
+  };
+
+  var REGISTRO_SCIENTIFIC_NAME = {
+    'Ácaro blanco': 'Polyphagotarsonemus latus',
+    'Ácaro tostador de los cítricos': 'Phyllocoptruta oleivora',
+    'Araña roja': 'Tetranychus urticae',
+    'Barrenador de la nuez': 'Cydia caryana',
+    'Barrenador del fruto': 'Diaphania nitidalis',
+    'Chinche lygus': 'Lygus lineolaris',
+    'Cochinilla': 'Planococcus ficus',
+    'Drosophila de alas manchadas': 'Drosophila suzukii',
+    'Falso medidor': 'Trichoplusia ni',
+    'Gusano alfiler': 'Keiferia lycopersicella',
+    'Gusano cogollero': 'Spodoptera frugiperda',
+    'Gusano de la guía del melón': 'Diaphania hyalinata',
+    'Gusano de la manzana': 'Cydia pomonella',
+    'Gusano del fruto': 'Heliothis zea',
+    'Gusano enrollador': 'Amorbia emigratella',
+    'Gusano soldado': 'Spodoptera exigua',
+    'Gusano tabacalero': 'Heliothis virescens',
+    'Minador de la hoja': 'Liriomyza sp.',
+    'Minador de los cítricos': 'Phyllocnistis citrella',
+    'Mosca blanca': 'Bemisia tabaci',
+    'Palomilla dorso de diamante': 'Plutella xylostella',
+    'Psílido asiático de los cítricos': 'Diaphorina citri',
+    'Psílido del tomate': 'Bactericera cockerelli',
+    'Pulgón': 'Aphis gossypii',
+    'Pulgón amarillo del nogal': 'Monellia caryella',
+    'Pulgón amarillo del sorgo': 'Melanaphis sacchari',
+    'Pulgón cenizo': 'Brevicoryne brassicae',
+    'Pulgón lanígero': 'Eriosoma lanigerum',
+    'Trips': 'Frankliniella occidentalis',
+  };
+
+  // Todo esto es plaga: son insecticidas y acaricidas. Sin categoría, el
+  // filtro del selector deja de funcionar.
+  var REGISTRO_CATEGORY = {};
+  Object.keys(REGISTRO_SCIENTIFIC_NAME).forEach(function(p){ REGISTRO_CATEGORY[p] = 'plaga'; });
+
+  function registrosFor(cropValue, problemValue){
+    var byCrop = REGISTROS[cropValue];
+    if(!byCrop) return null;
+    return byCrop[problemValue] || [];
+  }
+  // ---- FIN REGISTROS MEXICANOS ----
 
   var ALL_PROBLEMS = [
     'Plaga', 'Enfermedad', 'Maleza', 'Nutrición', 'Mosca blanca', 'Pulgón', 'Araña roja', 'Trips',
@@ -2242,10 +3193,18 @@
     'Enfermedad':'enfermedad',
     'Maleza':'maleza',
     'Nutrición':'nutricion'
-  }, PROBLEM_CATEGORY_ADDITIONS, CURATED_PROBLEM_CATEGORY);
+  }, PROBLEM_CATEGORY_ADDITIONS, CURATED_PROBLEM_CATEGORY, REGISTRO_CATEGORY);
 
+  // Los problemas que solo nombran las etiquetas: su científico solo rellena
+  // los que faltaban, un nombre ya curado manda sobre el de la etiqueta.
+  Object.keys(REGISTRO_SCIENTIFIC_NAME).forEach(function(p){
+    if(!PROBLEM_SCIENTIFIC_NAME[p]) PROBLEM_SCIENTIFIC_NAME[p] = REGISTRO_SCIENTIFIC_NAME[p];
+  });
   var PROBLEMAS_GENERICOS = ALL_PROBLEMS.slice();
   Object.keys(CURATED_PROBLEM_CATEGORY).forEach(function(p){
+    if(ALL_PROBLEMS.indexOf(p) === -1) ALL_PROBLEMS.push(p);
+  });
+  Object.keys(REGISTRO_CATEGORY).forEach(function(p){
     if(ALL_PROBLEMS.indexOf(p) === -1) ALL_PROBLEMS.push(p);
   });
 
@@ -2461,7 +3420,7 @@
   };
 
   function cropHasData(cropValue){
-    return !!ACTIVE_DATA[cropValue];
+    return !!ACTIVE_DATA[cropValue] || !!REGISTROS[cropValue];
   }
   function sortCropsByCoverage(list){
     var con = [], sin = [];
@@ -2496,13 +3455,20 @@
       return;
     }
 
-    var byCrop = ACTIVE_DATA[cropValue];
-    if(!byCrop){
-      renderEmptyResults(grid, 'Esta beta empieza con tomate. Todavía no hay datos de ' + cropValue + '.');
+    // Primero lo que la etiqueta mexicana ampara, con sus valores reales;
+    // después las moléculas que sirven pero cuyo registro falta verificar.
+    var registradas = registrosFor(cropValue, problemValue);
+    var sugeridas = (ACTIVE_DATA[cropValue] || {})[problemValue] || [];
+    if(registradas === null && !ACTIVE_DATA[cropValue]){
+      renderEmptyResults(grid, 'Todavía no hay datos de ' + cropValue + '.');
       return;
     }
-    var list = byCrop[problemValue];
-    if(!list || list.length === 0){
+    registradas = registradas || [];
+    var yaEsta = registradas.map(function(r){ return r.name; });
+    var list = registradas.map(function(r){ r = Object.assign({}, r); r.registrada = true; return r; })
+      .concat(sugeridas.filter(function(a){ return yaEsta.indexOf(a.name) === -1; })
+        .map(function(a){ a = Object.assign({}, a); a.registrada = false; return a; }));
+    if(list.length === 0){
       renderEmptyResults(grid, 'Todavía no hay datos para ' + cropValue + ' + ' + problemValue + '.');
       return;
     }
@@ -2517,10 +3483,18 @@
         '<span class="result-mfg">' + escapeHtml(item.group) + '</span>' +
         '<div class="result-name">' + escapeHtml(item.name) + '</div>' +
         '<div class="result-type">' + escapeHtml(MOA[item.group] || '') + '</div>' +
+        (item.registrada ? '<span class="result-reg">Registrado en México</span>' : '') +
         '<ul class="result-specs">' +
-          '<li><span>Registro en ' + escapeHtml(cropValue.toLowerCase()) + '</span><span>Por verificar</span></li>' +
-          '<li><span>Dosis</span><span>Según etiqueta</span></li>' +
-          '<li><span>Intervalo de seguridad</span><span>Por verificar</span></li>' +
+          '<li><span>Registro en ' + escapeHtml(cropValue.toLowerCase()) + '</span><span>' +
+            (item.registrada ? escapeHtml(item.registro) : 'Por verificar') + '</span></li>' +
+          '<li><span>Dosis</span><span>' +
+            (item.registrada ? escapeHtml(item.dosis) : 'Según etiqueta') + '</span></li>' +
+          '<li><span>Intervalo de seguridad</span><span>' +
+            (item.registrada
+              ? (item.phi === 'SL' ? 'Sin límite' : escapeHtml(item.phi) + (item.phi === '1' ? ' día' : ' días'))
+              : 'Por verificar') + '</span></li>' +
+          (item.registrada ? '<li><span>Reentrada</span><span>' + escapeHtml(item.rei) + ' horas</span></li>' : '') +
+          (item.registrada ? '<li><span>Se vende como</span><span>' + escapeHtml(item.marcas.join(' · ')) + '</span></li>' : '') +
         '</ul>';
       grid.appendChild(card);
     });
