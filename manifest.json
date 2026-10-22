@@ -1,7 +1,7 @@
 {
   "name": "AgroBC",
   "short_name": "AgroBC",
-  "description": "Busca un cultivo y un problema, compara productos agrícolas en Baja California.",
+  "description": "Escribe tu cultivo y tu problema, y ve qué ingredientes activos sirven, sin importar la marca.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
